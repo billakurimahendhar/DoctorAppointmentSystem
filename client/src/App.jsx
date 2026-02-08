@@ -30,6 +30,7 @@ import DoctorSlotsPatient from "./pages/Patient/DoctorSlots"; // 🔁 renamed
 import DocAppointments from "./pages/Doctor/DocAppointments";
 import PHome from "./pages/Patient/PHome";
 import DoctorProfile from "./pages/Doctor/DoctorProfile";
+import PatientTimeline from "./pages/Patient/PatientTimeLine";
 
 
 
@@ -51,7 +52,19 @@ export default function App() {
 
       <Routes>
         {/* 🌍 Public */}
-        <Route path="/" element={<Home />} />
+        <Route
+         path="/"
+        element={
+       !user ? (
+         <Home />
+       ) : user.role === "doctor" ? (
+         <Navigate to="/doctor-home" />
+      ) : (
+        <Navigate to="/patient-home" />
+    )
+  }
+/>
+
         <Route path="/login" element={!user ? <Login /> : <Navigate to={`/${user.role}-home`} />} />
         <Route path="/register" element={!user ? <Register /> : <Navigate to={`/${user.role}-home`} />} />
 
@@ -63,13 +76,14 @@ export default function App() {
         <Route path="/doctor/upload-report/:appointmentId" element={<ProtectedRoute allowedRole="doctor"><UploadReportPage /></ProtectedRoute>} />
         <Route path="/doctor/appointments" element={<DocAppointments />} />
         {/* 🧑 Patient */}
-        <Route path="/patient-home" element={<ProtectedRoute allowedRole="patient"><DoctorList /></ProtectedRoute>} />
+        <Route path="/patient-home" element={<ProtectedRoute allowedRole="patient"><PHome /></ProtectedRoute>} />
         <Route path="/patient-reports" element={<ProtectedRoute allowedRole="patient"><PatientReports /></ProtectedRoute>} />
         <Route path="/patient-courses" element={<ProtectedRoute allowedRole="patient"><PatientCourses /></ProtectedRoute>} />
         <Route path="/doctors/:id" element={<ProtectedRoute allowedRole="patient"><DoctorSlotsPatient /></ProtectedRoute>} />
         <Route path="/home" element={<ProtectedRoute allowedRole="patient"><PHome /></ProtectedRoute>} />
         <Route path="/doctors" element={<ProtectedRoute allowedRole="patient"><DoctorList /></ProtectedRoute>} />
         <Route path="/doctor-profile/:id" element={<ProtectedRoute allowedRole="patient"><DoctorProfile /></ProtectedRoute>} />
+        <Route path="/patient-timeline" element={<ProtectedRoute allowedRole="patient"><PatientTimeline /></ProtectedRoute>} />
         
       
 

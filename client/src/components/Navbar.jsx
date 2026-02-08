@@ -72,9 +72,7 @@ export default function Navbar() {
           {/* Patient Navbar */}
           {user?.role === "patient" && (
             <>
-              <Link to="/patient-home" className="hover:underline">
-                Dashboard
-              </Link>
+              
               <Link to="/home" className="hover:underline">
                 Home
               </Link>
@@ -82,7 +80,13 @@ export default function Navbar() {
                 Reports
               </Link>
               <Link to="/patient-courses" className="hover:underline">
-                Courses
+                HealthVideos
+              </Link>
+              <Link to="/doctors" className="hover:underline">
+                Doctors
+              </Link>
+              <Link to="/patient-timeline" className="hover:underline">
+                Timeline
               </Link>
               <button
                 onClick={handleLogout}

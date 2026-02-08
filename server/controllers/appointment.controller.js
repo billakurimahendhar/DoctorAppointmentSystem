@@ -1,5 +1,6 @@
 import Appointment from "../models/appointment.model.js";
 import Slot from "../models/slot.model.js";
+import Report from "../models/report.model.js";
 
 // patient books
 export const bookAppointment = async (req, res) => {
@@ -100,6 +101,29 @@ export const completeAppointment = async (req, res) => {
 
     res.json({ success: true, message: "Appointment marked completed" });
   } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+export const getPatientTimeline = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    const appointments = await Appointment.find({ patientId })
+  .populate("doctorId", "name specialization profileImage").sort({ date: 1, time: 1 }).lean(); // lean() for plain JS objects
+
+
+    // Attach medicines from reports for each appointment
+    for (let appt of appointments) {
+      const reports = await Report.find({ appointmentId: appt._id }).lean();
+      appt.medicines = reports.flatMap(r => r.prescribedMedicines || []);
+      appt.diseases = reports.map(r => r.diseaseName);
+    }
+
+    res.json({ success: true, timeline: appointments });
+  } catch (err) {
+    console.error("Timeline error:", err);
     res.status(500).json({ message: err.message });
   }
 };

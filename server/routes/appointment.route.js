@@ -5,6 +5,7 @@ import {
   getPatientAppointments
 } from "../controllers/appointment.controller.js";
 import { completeAppointment } from "../controllers/appointment.controller.js";
+import { getPatientTimeline } from "../controllers/appointment.controller.js";
 
 
 
@@ -14,5 +15,7 @@ router.post("/book", bookAppointment); // patient books
 router.get("/doctor/:id", getDoctorAppointments); // doctor sees booked
 router.get("/patient/:id", getPatientAppointments); // patient sees booked
 router.put("/complete/:id", completeAppointment);
+router.get("/patient/:patientId/timeline", getPatientTimeline);
+
 
 export default router;
