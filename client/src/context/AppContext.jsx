@@ -33,6 +33,7 @@ export const AppProvider = ({ children }) => {
           email: data.email,
           role,
           token: data.token,
+          profileImage: data.profileImage || "", // 🔥 add profileImage to context
         };
         setUser(newUser);
         localStorage.setItem("user", JSON.stringify(newUser));

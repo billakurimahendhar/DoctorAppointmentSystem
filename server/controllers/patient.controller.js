@@ -46,6 +46,7 @@ export const loginPatient = async (req, res) => {
       _id: patient._id,
       name: patient.name,
       email: patient.email,
+      
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

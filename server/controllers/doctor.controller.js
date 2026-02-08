@@ -3,6 +3,7 @@ import Doctor from "../models/doctor.model.js";
 import generateToken from "../config/jwt.js";
 import Slot from "../models/slot.model.js";
 import cloudinary from "../config/cloudinary.js";
+import { profile } from "console";
 /* -------------------------------------------------------------------------- */
 /* ✅ Helper: Generate 7 days × 30-min slots (10 AM–10 PM)                    */
 /* -------------------------------------------------------------------------- */
@@ -89,6 +90,7 @@ export const loginDoctor = async (req, res) => {
       _id: doctor._id,
       name: doctor.name,
       email: doctor.email,
+      profileImage: doctor.profileImage,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

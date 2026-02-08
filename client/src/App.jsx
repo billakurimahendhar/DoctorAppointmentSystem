@@ -15,7 +15,7 @@ import Home from "./pages/Home";
 
 // Doctor Pages
 import DoctorHome from "./pages/Doctor/DoctorHome";
-import DoctorSlotsDoctor from "./pages/Doctor/DoctorSlots"; // 🔁 renamed
+import DoctorSlots from "./pages/Doctor/DoctorSlots"; // 🔁 renamed
 import DoctorReports from "./pages/Doctor/DoctorReports";
 import DoctorCourses from "./pages/Doctor/DoctorCourses";
 import UploadReportPage from "./pages/Doctor/UploadReportPage";
@@ -70,11 +70,12 @@ export default function App() {
 
         {/* 👨‍⚕️ Doctor */}
         <Route path="/doctor-home" element={<ProtectedRoute allowedRole="doctor"><DoctorHome /></ProtectedRoute>} />
-        <Route path="/doctor-slots" element={<ProtectedRoute allowedRole="doctor"><DoctorSlotsDoctor /></ProtectedRoute>} />
+        <Route path="/doctor-slots" element={<ProtectedRoute allowedRole="doctor"><DoctorSlots/></ProtectedRoute>} />
         <Route path="/doctor-reports" element={<ProtectedRoute allowedRole="doctor"><DoctorReports /></ProtectedRoute>} />
         <Route path="/doctor-courses" element={<ProtectedRoute allowedRole="doctor"><DoctorCourses /></ProtectedRoute>} />
         <Route path="/doctor/upload-report/:appointmentId" element={<ProtectedRoute allowedRole="doctor"><UploadReportPage /></ProtectedRoute>} />
         <Route path="/doctor/appointments" element={<DocAppointments />} />
+       
         {/* 🧑 Patient */}
         <Route path="/patient-home" element={<ProtectedRoute allowedRole="patient"><PHome /></ProtectedRoute>} />
         <Route path="/patient-reports" element={<ProtectedRoute allowedRole="patient"><PatientReports /></ProtectedRoute>} />
