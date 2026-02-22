@@ -1,6 +1,7 @@
 import Appointment from "../models/appointment.model.js";
 import Slot from "../models/slot.model.js";
 import Report from "../models/report.model.js";
+import mongoose from "mongoose";
 
 // patient books
 export const bookAppointment = async (req, res) => {
@@ -125,5 +126,45 @@ export const getPatientTimeline = async (req, res) => {
   } catch (err) {
     console.error("Timeline error:", err);
     res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+/* -------------------------------------------------------------------------- */
+/* 🧑‍⚕️ Get Doctor Dashboard Appointments                                     */
+/* GET /api/appointments?userId=xxx&role=doctor                                */
+/* -------------------------------------------------------------------------- */
+export const getAppointmentsByRole = async (req, res) => {
+  try {
+    const { userId, role } = req.query;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid userId" });
+    }
+
+    let filter = {};
+
+    if (role === "doctor") {
+      filter.doctorId = userId;
+    } else if (role === "patient") {
+      filter.patientId = userId;
+    } else {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    const appointments = await Appointment.find(filter)
+      .populate("patientId", "name email")
+      .populate("doctorId", "name specialization")
+      .sort({ date: 1, time: 1 });
+
+    res.json({
+      success: true,
+      count: appointments.length,
+      appointments,
+    });
+  } catch (error) {
+    console.error("Get appointments error:", error);
+    res.status(500).json({ message: error.message });
   }
 };

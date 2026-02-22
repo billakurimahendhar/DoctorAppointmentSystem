@@ -6,11 +6,11 @@ import {
 } from "../controllers/appointment.controller.js";
 import { completeAppointment } from "../controllers/appointment.controller.js";
 import { getPatientTimeline } from "../controllers/appointment.controller.js";
-
+import { getAppointmentsByRole } from "../controllers/appointment.controller.js";
 
 
 const router = express.Router();
-
+router.get("/", getAppointmentsByRole); // for doctor dashboard
 router.post("/book", bookAppointment); // patient books
 router.get("/doctor/:id", getDoctorAppointments); // doctor sees booked
 router.get("/patient/:id", getPatientAppointments); // patient sees booked

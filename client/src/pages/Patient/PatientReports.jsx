@@ -54,12 +54,11 @@ export default function PatientReports() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6 md:p-10">
+    <div className="min-h-screen from-blue-50 via-white to-indigo-50 p-6 md:p-10">
       <h1 className="text-3xl font-bold text-blue-700 text-center mb-12">
         My Health Reports 📊
       </h1>
 
-      {/* 🔥 TWO CARDS PER ROW */}
       <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
         {Object.entries(groupedReports).map(([disease, reports]) => {
           const [min, max] = normalRanges[disease] || [0, Infinity];
@@ -86,14 +85,60 @@ export default function PatientReports() {
                 </span>
               </div>
 
-              {/* SMALL GRAPH */}
               <div className="h-44 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={reports}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} />
-                    <Tooltip />
+
+                    {/* ⭐ UPDATED TOOLTIP WITH MEDICINES */}
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          const point = payload[0].payload;
+                          const abnormal =
+                            point.value < min || point.value > max;
+
+                          return (
+                            <div className="bg-white border shadow-lg rounded-lg p-3 text-sm">
+                              <p className="font-semibold text-blue-700">
+                                {label}
+                              </p>
+                              <p>
+                                Value:{" "}
+                                <span className="font-semibold">
+                                  {point.value}
+                                </span>{" "}
+                                {point.unit || ""}
+                              </p>
+
+                              <p
+                                className={`mt-1 font-semibold ${
+                                  abnormal ? "text-red-600" : "text-green-600"
+                                }`}
+                              >
+                                {abnormal ? "Abnormal" : "Normal"}
+                              </p>
+
+                              {point.prescribedMedicines?.length > 0 && (
+                                <>
+                                  <p className="mt-2 font-semibold text-gray-700">
+                                    Medicines:
+                                  </p>
+                                  <ul className="list-disc ml-4 text-gray-600">
+                                    {point.prescribedMedicines.map((med, i) => (
+                                      <li key={i}>{med}</li>
+                                    ))}
+                                  </ul>
+                                </>
+                              )}
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
 
                     <Line
                       type="monotone"
@@ -119,7 +164,6 @@ export default function PatientReports() {
                 </ResponsiveContainer>
               </div>
 
-              {/* AI SUGGESTION */}
               <div className="mt-4 p-3 bg-blue-50 rounded-lg border text-sm">
                 <p className="font-semibold text-blue-700 mb-1">
                   AI Suggestion

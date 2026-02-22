@@ -3,7 +3,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext";
-
+import Layout from "./components/Layout";
 // Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -34,6 +34,8 @@ import PatientTimeline from "./pages/Patient/PatientTimeLine";
 
 
 
+import DoctorDashboard from "./pages/DoctorDashboard";
+
 
 export default function App() {
   const { user, loading } = useContext(AppContext);
@@ -49,7 +51,7 @@ export default function App() {
   return (
     <Router>
       <Navbar />
-
+      
       <Routes>
         {/* 🌍 Public */}
         <Route
@@ -58,14 +60,25 @@ export default function App() {
        !user ? (
          <Home />
        ) : user.role === "doctor" ? (
-         <Navigate to="/doctor-home" />
+         <Navigate to="/doctor-dashboard" />
       ) : (
         <Navigate to="/patient-home" />
     )
   }
 />
 
-        <Route path="/login" element={!user ? <Login /> : <Navigate to={`/${user.role}-home`} />} />
+        <Route
+  path="/login"
+  element={
+    !user ? (
+      <Login />
+    ) : user.role === "doctor" ? (
+      <Navigate to="/doctor-dashboard" />
+    ) : (
+      <Navigate to="/patient-home" />
+    )
+  }
+/>
         <Route path="/register" element={!user ? <Register /> : <Navigate to={`/${user.role}-home`} />} />
 
         {/* 👨‍⚕️ Doctor */}
@@ -86,11 +99,13 @@ export default function App() {
         <Route path="/doctor-profile/:id" element={<ProtectedRoute allowedRole="patient"><DoctorProfile /></ProtectedRoute>} />
         <Route path="/patient-timeline" element={<ProtectedRoute allowedRole="patient"><PatientTimeline /></ProtectedRoute>} />
         
-      
+          {/* 🩺 Doctor Dashboard */}
+          <Route path="/doctor-dashboard" element={<ProtectedRoute allowedRole="doctor"><DoctorDashboard /></ProtectedRoute>} />
 
         {/* 🚫 Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+    
     </Router>
   );
 }

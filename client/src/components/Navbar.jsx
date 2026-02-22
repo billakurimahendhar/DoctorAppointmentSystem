@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import logo from "../assets/logo.svg"; // ✅ add this line
 
 export default function Navbar() {
   const { user, logoutUser } = useContext(AppContext);
@@ -20,9 +21,17 @@ export default function Navbar() {
   return (
     <nav className="bg-blue-700 text-white py-3 shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
-        {/* Logo */}
-        <Link to="/" className="text-2xl font-bold tracking-wide">
-          MediConnect
+        
+        {/* 🔷 Logo */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <img
+            src={logo}
+            alt="MediConnect Logo"
+            className="h-10 w-auto transition-transform duration-300 group-hover:scale-110"
+          />
+          <span className="text-2xl font-bold tracking-wide hidden sm:block">
+            MediConnect
+          </span>
         </Link>
 
         {/* Right Section */}
@@ -43,7 +52,7 @@ export default function Navbar() {
           {/* 👨‍⚕️ Doctor Navbar */}
           {user?.role === "doctor" && (
             <>
-              <Link to="/doctor-home" className={isActive("/doctor-home")}>
+              <Link to="/doctor-dashboard" className={isActive("/doctor-dashboard")}>
                 Dashboard
               </Link>
               <Link to="/doctor/appointments" className={isActive("/doctor/appointments")}>
@@ -51,24 +60,24 @@ export default function Navbar() {
               </Link>
               
               <Link to="/doctor-courses" className={isActive("/doctor-courses")}>
-                Courses
+                health Videos
               </Link>
 
               {/* Profile Image */}
-              <Link to={`/doctor-profile-edit/${user._id}`} className="flex items-center gap-2">
+              <Link to={`/doctor-home`} className="flex items-center gap-2">
                 <img
                   src={
                     user.profileImage ||
                     "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                   }
                   alt="Doctor"
-                  className="w-9 h-9 rounded-full border-2 border-white object-cover"
+                  className="w-9 h-9 rounded-full border-2 border-white object-cover hover:scale-110 transition-transform duration-200"
                 />
               </Link>
 
               <button
                 onClick={handleLogout}
-                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100"
+                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition"
               >
                 Logout
               </button>
@@ -96,7 +105,7 @@ export default function Navbar() {
 
               <button
                 onClick={handleLogout}
-                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100"
+                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition"
               >
                 Logout
               </button>

@@ -22,7 +22,7 @@ export default function DoctorProfile() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 p-8">
       <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 text-center">
         <img
           src={

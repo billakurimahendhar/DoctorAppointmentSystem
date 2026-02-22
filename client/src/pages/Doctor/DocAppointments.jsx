@@ -50,7 +50,7 @@ export default function DocAppointments() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6 md:p-10">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-blue-700 mb-8 text-center">
           My Appointments
