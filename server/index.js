@@ -29,13 +29,14 @@ console.log("🧩 ENV loaded — PORT:", port);
 connectDB();
 
 // middlewares
-const corsOptions = {
-  origin: "*", // allow 
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://doctor-appointment-system-x6xp.vercel.app"
+  ],
+  credentials: true
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json());
 app.get("/", (req, res) => res.send("Doctor Appointment System API is running..."));
 
