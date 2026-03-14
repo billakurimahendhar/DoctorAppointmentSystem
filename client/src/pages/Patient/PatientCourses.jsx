@@ -10,7 +10,7 @@ export default function PatientCourses() {
 
   useEffect(() => {
     axios
-      .get("https://doctorappointmentsystem.onrender.com/api/courses")
+      .get("https://doctorappointmentsystem-0818.onrender.com/api/courses")
       .then((res) => setCourses(res.data.courses))
       .catch((err) => console.error("Error fetching courses:", err))
       .finally(() => setLoading(false));

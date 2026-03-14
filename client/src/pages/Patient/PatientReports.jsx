@@ -27,7 +27,7 @@ export default function PatientReports() {
     const fetchReports = async () => {
       try {
         const res = await axios.get(
-          `https://doctorappointmentsystem.onrender.com/api/reports/patient/${patient._id}`
+          `https://doctorappointmentsystem-0818.onrender.com/api/reports/patient/${patient._id}`
         );
         setGroupedReports(res.data.groupedByDisease || {});
       } catch (err) {

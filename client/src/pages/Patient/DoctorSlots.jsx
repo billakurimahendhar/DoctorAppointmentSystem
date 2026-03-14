@@ -17,10 +17,10 @@ export default function DoctorSlots() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const slotRes = await axios.get(`https://doctorappointmentsystem.onrender.com/api/doctor/${doctorId}/slots`);
+        const slotRes = await axios.get(`https://doctorappointmentsystem-0818.onrender.com/api/doctor/${doctorId}/slots`);
         setSlots(slotRes.data.slots || []);
 
-        const docRes = await axios.get(`https://doctorappointmentsystem.onrender.com/api/doctor`);
+        const docRes = await axios.get(`https://doctorappointmentsystem-0818.onrender.com/api/doctor`);
         const found = docRes.data.doctors.find(d => d._id === doctorId);
         setDoctor(found);
 
@@ -49,7 +49,7 @@ export default function DoctorSlots() {
   const bookAppointment = async (slot, paymentMode) => {
     try {
       const { data: booking } = await axios.post(
-        "https://doctorappointmentsystem.onrender.com/api/appointments/book",
+        "https://doctorappointmentsystem-0818.onrender.com/api/appointments/book",
         {
           doctorId,
           patientId: patient._id,
@@ -66,7 +66,7 @@ export default function DoctorSlots() {
       }
 
       const { data } = await axios.post(
-        "https://doctorappointmentsystem.onrender.com/api/payment/create-order",
+        "https://doctorappointmentsystem-0818.onrender.com/api/payment/create-order",
         { amount: 500, appointmentId: booking.appointment._id }
       );
 
@@ -78,7 +78,7 @@ export default function DoctorSlots() {
         description: "Doctor Appointment",
         order_id: data.order.id,
         handler: async (response) => {
-          await axios.post("https://doctorappointmentsystem.onrender.com/api/payment/verify", {
+          await axios.post("https://doctorappointmentsystem-0818.onrender.com/api/payment/verify", {
             ...response,
             appointmentId: booking.appointment._id,
           });

@@ -16,7 +16,7 @@ export default function DocAppointments() {
   const fetchAppointments = async () => {
     try {
       const res = await axios.get(
-        `https://doctorappointmentsystem.onrender.com/api/appointments/doctor/${doctor._id}`
+        `https://doctorappointmentsystem-0818.onrender.com/api/appointments/doctor/${doctor._id}`
       );
       setAppointments(res.data.appointments || []);
     } catch (err) {

@@ -24,7 +24,7 @@ export default function DoctorHome() {
   const fetchAppointments = async () => {
     try {
       const res = await axios.get(
-        `https://doctorappointmentsystem.onrender.com/api/appointments/doctor/${doctor._id}`
+        `https://doctorappointmentsystem-0818.onrender.com/api/appointments/doctor/${doctor._id}`
       );
       setAppointments(res.data.appointments || []);
     } catch (err) {
@@ -43,7 +43,7 @@ export default function DoctorHome() {
 
     try {
       const res = await axios.post(
-        `https://doctorappointmentsystem.onrender.com/api/doctor/${doctor._id}/upload-photo`,
+        `https://doctorappointmentsystem-0818.onrender.com/api/doctor/${doctor._id}/upload-photo`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

@@ -9,7 +9,7 @@ export default function DoctorSlots() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("https://doctorappointmentsystem.onrender.com/api/doctor");
+        const res = await axios.get("https://doctorappointmentsystem-0818.onrender.com/api/doctor");
         setDoctors(res.data.doctors || []);
       } catch (err) {
         console.error("Error fetching doctors:", err);

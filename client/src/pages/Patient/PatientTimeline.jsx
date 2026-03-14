@@ -9,7 +9,7 @@ export default function PatientTimeline() {
 
   useEffect(() => {
     axios
-      .get(`https://doctorappointmentsystem.onrender.com/api/appointments/patient/${patient._id}/timeline`)
+      .get(`https://doctorappointmentsystem-0818.onrender.com/api/appointments/patient/${patient._id}/timeline`)
       .then((res) => setTimeline(res.data.timeline || []))
       .finally(() => setLoading(false));
   }, [patient._id]);
