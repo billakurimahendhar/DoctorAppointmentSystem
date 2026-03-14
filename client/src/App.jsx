@@ -30,7 +30,7 @@ import DoctorSlotsPatient from "./pages/Patient/DoctorSlots"; // 🔁 renamed
 import DocAppointments from "./pages/Doctor/DocAppointments";
 import PHome from "./pages/Patient/PHome";
 import DoctorProfile from "./pages/Doctor/DoctorProfile";
-import PatientTimeLine from "./pages/Patient/PatientTimeLine";
+import PatientTimeline from "./pages/Patient/PatientTimeline";
 
 
 
@@ -97,7 +97,7 @@ export default function App() {
         <Route path="/home" element={<ProtectedRoute allowedRole="patient"><PHome /></ProtectedRoute>} />
         <Route path="/doctors" element={<ProtectedRoute allowedRole="patient"><DoctorList /></ProtectedRoute>} />
         <Route path="/doctor-profile/:id" element={<ProtectedRoute allowedRole="patient"><DoctorProfile /></ProtectedRoute>} />
-        <Route path="/patient-timeline" element={<ProtectedRoute allowedRole="patient"><PatientTimeLine /></ProtectedRoute>} />
+        <Route path="/patient-timeline" element={<ProtectedRoute allowedRole="patient"><PatientTimeline /></ProtectedRoute>} />
         
           {/* 🩺 Doctor Dashboard */}
           <Route path="/doctor-dashboard" element={<ProtectedRoute allowedRole="doctor"><DoctorDashboard /></ProtectedRoute>} />
