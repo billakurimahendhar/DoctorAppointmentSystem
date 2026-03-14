@@ -97,7 +97,7 @@ export default function App() {
         <Route path="/home" element={<ProtectedRoute allowedRole="patient"><PHome /></ProtectedRoute>} />
         <Route path="/doctors" element={<ProtectedRoute allowedRole="patient"><DoctorList /></ProtectedRoute>} />
         <Route path="/doctor-profile/:id" element={<ProtectedRoute allowedRole="patient"><DoctorProfile /></ProtectedRoute>} />
-        <Route path="/patient-timeline" element={<ProtectedRoute allowedRole="patient"><PatientTimeline /></ProtectedRoute>} />
+        <Route path="/patient-timeline" element={<ProtectedRoute allowedRole="patient"><PatientTimeLine /></ProtectedRoute>} />
         
           {/* 🩺 Doctor Dashboard */}
           <Route path="/doctor-dashboard" element={<ProtectedRoute allowedRole="doctor"><DoctorDashboard /></ProtectedRoute>} />
