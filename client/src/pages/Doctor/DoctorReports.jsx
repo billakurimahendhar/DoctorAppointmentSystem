@@ -22,7 +22,7 @@ export default function DoctorReports() {
     const fetchAppointments = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:4000/api/appointments/doctor/${doctor._id}`
+          `https://doctorappointmentsystem.onrender.com/api/appointments/doctor/${doctor._id}`
         );
         setAppointments(res.data.appointments || []);
       } catch (err) {
@@ -58,7 +58,7 @@ export default function DoctorReports() {
       };
 
       const res = await axios.post(
-        "http://localhost:4000/api/reports/upload",
+        "https://doctorappointmentsystem.onrender.com/api/reports/upload",
         payload
       );
 
@@ -80,7 +80,7 @@ export default function DoctorReports() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 p-8">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6">
         <h2 className="text-2xl font-bold text-blue-700 mb-4 text-center">
           Upload Patient Test Report

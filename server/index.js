@@ -30,7 +30,7 @@ connectDB();
 
 // middlewares
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173"], // allow both
+  origin: ["*", "https://doctorappointmentsystem.onrender.com"], // allow 
   credentials: true,
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -38,6 +38,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.get("/", (req, res) => res.send("Doctor Appointment System API is running..."));
 
 // routes
 app.use("/api/health", healthRoute);

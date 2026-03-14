@@ -11,8 +11,8 @@ export default function UserProvider({ children }) {
   const login = async (email, password, role) => {
     const url =
       role === "doctor"
-        ? "http://localhost:4000/api/doctor/login"
-        : "http://localhost:4000/api/patient/login";
+        ? "https://doctorappointmentsystem.onrender.com/api/doctor/login"
+        : "https://doctorappointmentsystem.onrender.com/api/patient/login";
     console.log("➡️ Logging in:", { role, email, password });
     
     const { data } = await axios.post(url, { email, password });
@@ -38,8 +38,8 @@ export default function UserProvider({ children }) {
   const register = async (payload, role) => {
     const url =
       role === "doctor"
-        ? "http://localhost:4000/api/doctor/register"
-        : "http://localhost:4000/api/patient/register";
+        ? "https://doctorappointmentsystem.onrender.com/api/doctor/register"
+        : "https://doctorappointmentsystem.onrender.com/api/patient/register";
     await axios.post(url, payload);
   };
 

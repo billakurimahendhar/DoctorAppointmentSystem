@@ -18,7 +18,7 @@ export default function DoctorCourses() {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get(`http://localhost:4000/api/courses/${doctor._id}`);
+      const res = await axios.get(`https://doctorappointmentsystem.onrender.com/api/courses/${doctor._id}`);
       setCourses(res.data.courses || []);
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -37,7 +37,7 @@ export default function DoctorCourses() {
     try {
       setLoading(true);
       const res = await axios.post(
-        `http://localhost:4000/api/courses/${doctor._id}/upload`,
+        `https://doctorappointmentsystem.onrender.com/api/courses/${doctor._id}/upload`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -56,7 +56,7 @@ export default function DoctorCourses() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-10 px-6">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 py-10 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">

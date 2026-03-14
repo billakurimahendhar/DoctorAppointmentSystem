@@ -38,8 +38,8 @@ export const AppProvider = ({ children }) => {
     try {
       const endpoint =
         role === "doctor"
-          ? "http://localhost:4000/api/doctor/login"
-          : "http://localhost:4000/api/patient/login";
+          ? "https://doctorappointmentsystem.onrender.com/api/doctor/login"
+          : "https://doctorappointmentsystem.onrender.com/api/patient/login";
 
       const { data } = await axios.post(endpoint, { email, password });
 
@@ -67,8 +67,8 @@ export const AppProvider = ({ children }) => {
     try {
       const endpoint =
         role === "doctor"
-          ? "http://localhost:4000/api/doctor/register"
-          : "http://localhost:4000/api/patient/register";
+          ? "https://doctorappointmentsystem.onrender.com/api/doctor/register"
+          : "https://doctorappointmentsystem.onrender.com/api/patient/register";
 
       const { data } = await axios.post(endpoint, form);
 

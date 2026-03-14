@@ -24,7 +24,7 @@ export default function DoctorHome() {
   const fetchAppointments = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:4000/api/appointments/doctor/${doctor._id}`
+        `https://doctorappointmentsystem.onrender.com/api/appointments/doctor/${doctor._id}`
       );
       setAppointments(res.data.appointments || []);
     } catch (err) {
@@ -43,7 +43,7 @@ export default function DoctorHome() {
 
     try {
       const res = await axios.post(
-        `http://localhost:4000/api/doctor/${doctor._id}/upload-photo`,
+        `https://doctorappointmentsystem.onrender.com/api/doctor/${doctor._id}/upload-photo`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -80,7 +80,7 @@ export default function DoctorHome() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="h-screen flex items-center justify-center  from-blue-50 to-indigo-100">
         <div className="text-blue-700 text-lg font-semibold animate-pulse">
           Loading appointments...
         </div>
@@ -89,7 +89,7 @@ export default function DoctorHome() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6 md:p-10">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 p-6 md:p-10">
       {/* PROFILE HEADER */}
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-10">
         <div className="flex flex-col md:flex-row items-center gap-6">

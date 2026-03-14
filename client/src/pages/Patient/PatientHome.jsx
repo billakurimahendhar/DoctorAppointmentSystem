@@ -10,7 +10,7 @@ export default function PatientHome() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/doctor");
+        const res = await axios.get("https://doctorappointmentsystem.onrender.com/api/doctor");
         setDoctors(res.data.doctors || []);
       } catch (err) {
         console.error("Error fetching doctors:", err);

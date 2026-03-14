@@ -9,7 +9,7 @@ export default function PatientTimeline() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/appointments/patient/${patient._id}/timeline`)
+      .get(`https://doctorappointmentsystem.onrender.com/api/appointments/patient/${patient._id}/timeline`)
       .then((res) => setTimeline(res.data.timeline || []))
       .finally(() => setLoading(false));
   }, [patient._id]);
@@ -31,7 +31,7 @@ export default function PatientTimeline() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 p-8">
       <h1 className="text-3xl font-bold text-center text-blue-700 mb-8">
         My Medical Timeline 🕒
       </h1>

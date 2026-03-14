@@ -17,10 +17,10 @@ export default function DoctorSlots() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const slotRes = await axios.get(`http://localhost:4000/api/doctor/${doctorId}/slots`);
+        const slotRes = await axios.get(`https://doctorappointmentsystem.onrender.com/api/doctor/${doctorId}/slots`);
         setSlots(slotRes.data.slots || []);
 
-        const docRes = await axios.get(`http://localhost:4000/api/doctor`);
+        const docRes = await axios.get(`https://doctorappointmentsystem.onrender.com/api/doctor`);
         const found = docRes.data.doctors.find(d => d._id === doctorId);
         setDoctor(found);
 
@@ -49,7 +49,7 @@ export default function DoctorSlots() {
   const bookAppointment = async (slot, paymentMode) => {
     try {
       const { data: booking } = await axios.post(
-        "http://localhost:4000/api/appointments/book",
+        "https://doctorappointmentsystem.onrender.com/api/appointments/book",
         {
           doctorId,
           patientId: patient._id,
@@ -66,7 +66,7 @@ export default function DoctorSlots() {
       }
 
       const { data } = await axios.post(
-        "http://localhost:4000/api/payment/create-order",
+        "https://doctorappointmentsystem.onrender.com/api/payment/create-order",
         { amount: 500, appointmentId: booking.appointment._id }
       );
 
@@ -78,7 +78,7 @@ export default function DoctorSlots() {
         description: "Doctor Appointment",
         order_id: data.order.id,
         handler: async (response) => {
-          await axios.post("http://localhost:4000/api/payment/verify", {
+          await axios.post("https://doctorappointmentsystem.onrender.com/api/payment/verify", {
             ...response,
             appointmentId: booking.appointment._id,
           });
@@ -96,7 +96,7 @@ export default function DoctorSlots() {
   if (loading) return <div className="h-screen flex justify-center items-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 p-8">
       <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">Available Slots</h1>
 
       {/* Date Selector */}

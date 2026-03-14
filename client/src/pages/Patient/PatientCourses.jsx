@@ -10,14 +10,14 @@ export default function PatientCourses() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:4000/api/courses")
+      .get("https://doctorappointmentsystem.onrender.com/api/courses")
       .then((res) => setCourses(res.data.courses))
       .catch((err) => console.error("Error fetching courses:", err))
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-10 px-6">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 py-10 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">

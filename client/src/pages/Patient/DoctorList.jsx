@@ -9,7 +9,7 @@ export default function DoctorList() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/doctor");
+        const res = await axios.get("https://doctorappointmentsystem.onrender.com/api/doctor");
         setDoctors(res.data.doctors || []);
       } catch (err) {
         console.error("Error fetching doctors:", err);
@@ -30,7 +30,7 @@ export default function DoctorList() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6">
+    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 p-6">
       <h1 className="text-3xl font-bold text-center text-blue-700 mb-10">
         Available Doctors 👨‍⚕️👩‍⚕️
       </h1>

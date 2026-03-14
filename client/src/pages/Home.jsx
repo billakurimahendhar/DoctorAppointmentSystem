@@ -18,7 +18,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col justify-center items-center  from-blue-50 via-white to-indigo-50 px-4">
       <h2 className="text-4xl font-extrabold text-blue-700 text-center mb-4">
         Book Your Doctor Appointments Effortlessly
       </h2>

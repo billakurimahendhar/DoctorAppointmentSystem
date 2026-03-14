@@ -9,7 +9,7 @@ export default function DoctorProfile() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/doctor/profile/${id}`)
+      .get(`https://doctorappointmentsystem.onrender.com/api/doctor/profile/${id}`)
       .then((res) => setDoctor(res.data.doctor))
       .catch((err) => console.error(err));
   }, [id]);

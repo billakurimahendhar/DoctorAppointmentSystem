@@ -26,7 +26,7 @@ export default function DoctorDashboard() {
     if (!user) return;
     axios
       .get(
-        `http://localhost:4000/api/appointments?userId=${user._id}&role=doctor`,
+        `https://doctorappointmentsystem.onrender.com/api/appointments?userId=${user._id}&role=doctor`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((res) => setAppointments(res.data.appointments || []))

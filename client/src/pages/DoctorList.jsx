@@ -6,7 +6,7 @@ export default function DoctorList() {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/api/doctor").then((res) => setDoctors(res.data.doctors));
+    axios.get("https://doctorappointmentsystem.onrender.com/api/doctor").then((res) => setDoctors(res.data.doctors));
   }, []);
 
   return (

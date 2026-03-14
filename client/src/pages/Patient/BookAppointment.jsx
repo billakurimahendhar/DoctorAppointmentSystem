@@ -14,7 +14,7 @@ export default function BookAppointment({ doctorId }) {
   }, [doctorId]);
 
   const fetchSlots = async () => {
-    const res = await axios.get(`http://localhost:4000/api/doctor/${doctorId}/slots`);
+    const res = await axios.get(`https://doctorappointmentsystem.onrender.com/api/doctor/${doctorId}/slots`);
     setSlots(res.data.slots.filter((s) => !s.isBooked));
   };
 
@@ -33,7 +33,7 @@ export default function BookAppointment({ doctorId }) {
       };
 
       const res = await axios.post(
-        "http://localhost:4000/api/appointments/book",
+        "https://doctorappointmentsystem.onrender.com/api/appointments/book",
         appointment
       );
 
@@ -53,7 +53,7 @@ export default function BookAppointment({ doctorId }) {
 
   const startRazorpayPayment = async (appointment) => {
     const amount = 500; // fixed fee or doctor-specific
-    const { data } = await axios.post("http://localhost:4000/api/payment/create-order", {
+    const { data } = await axios.post("https://doctorappointmentsystem.onrender.com/api/payment/create-order", {
       amount,
       appointmentId: appointment._id,
     });
@@ -66,7 +66,7 @@ export default function BookAppointment({ doctorId }) {
       description: "Doctor Appointment Payment",
       order_id: data.order.id,
       handler: async function (response) {
-        await axios.post("http://localhost:4000/api/payment/verify", {
+        await axios.post("https://doctorappointmentsystem.onrender.com/api/payment/verify", {
           ...response,
           appointmentId: appointment._id,
         });

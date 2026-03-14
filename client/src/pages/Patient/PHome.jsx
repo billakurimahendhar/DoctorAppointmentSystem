@@ -23,7 +23,7 @@ export default function PHome() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/doctor");
+        const res = await axios.get("https://doctorappointmentsystem.onrender.com/api/doctor");
         setDoctors(res.data.doctors || []);
       } catch (err) {
         console.error("Error fetching doctors", err);
@@ -55,7 +55,7 @@ export default function PHome() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 via-white to-white min-h-screen overflow-hidden">
+    <div className=" from-blue-50 via-white to-white min-h-screen overflow-hidden">
 
       {/* HERO */}
       <section className="max-w-7xl mx-auto px-6 pt-20 pb-24 grid lg:grid-cols-2 gap-12 items-center animate-fadeIn">
