@@ -30,7 +30,7 @@ import DoctorSlotsPatient from "./pages/Patient/DoctorSlots"; // 🔁 renamed
 import DocAppointments from "./pages/Doctor/DocAppointments";
 import PHome from "./pages/Patient/PHome";
 import DoctorProfile from "./pages/Doctor/DoctorProfile";
-import PatientTimeline from "./pages/Patient/PatientTimeLine";
+import PatientTimeLine from "./pages/Patient/PatientTimeLine";
 
 
 
