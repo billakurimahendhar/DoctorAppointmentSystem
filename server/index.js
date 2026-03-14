@@ -30,7 +30,7 @@ connectDB();
 
 // middlewares
 const corsOptions = {
-  origin: ["*", "https://doctorappointmentsystem.onrender.com"], // allow 
+  origin: ["*", ""], // allow 
   credentials: true,
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
