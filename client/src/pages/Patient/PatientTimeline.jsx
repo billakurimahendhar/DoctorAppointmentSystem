@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function PatientTimeLine() {
+export default function PatientTimeline() {
   const patient = JSON.parse(localStorage.getItem("user"));
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
