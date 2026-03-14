@@ -30,8 +30,7 @@ connectDB();
 
 // middlewares
 const corsOptions = {
-  origin: ["*", ""], // allow 
-  credentials: true,
+  origin: "*", // allow 
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
