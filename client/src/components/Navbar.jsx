@@ -55,8 +55,14 @@ export default function Navbar() {
               <Link to="/doctor-dashboard" className={isActive("/doctor-dashboard")}>
                 Dashboard
               </Link>
+              <Link to="/doctor-slots" className={isActive("/doctor-slots")}>
+                Availability
+              </Link>
               <Link to="/doctor/appointments" className={isActive("/doctor/appointments")}>
                 My Appointments
+              </Link>
+              <Link to="/notifications" className={isActive("/notifications")}>
+                Notifications
               </Link>
               
               <Link to="/doctor-courses" className={isActive("/doctor-courses")}>
@@ -90,6 +96,9 @@ export default function Navbar() {
               <Link to="/patient-home" className={isActive("/patient-home")}>
                 Home
               </Link>
+              <Link to="/patient-appointments" className={isActive("/patient-appointments")}>
+                Appointments
+              </Link>
               <Link to="/patient-reports" className={isActive("/patient-reports")}>
                 Reports
               </Link>
@@ -102,7 +111,27 @@ export default function Navbar() {
               <Link to="/patient-timeline" className={isActive("/patient-timeline")}>
                 Timeline
               </Link>
+              <Link to="/notifications" className={isActive("/notifications")}>
+                Notifications
+              </Link>
 
+              <button
+                onClick={handleLogout}
+                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition"
+              >
+                Logout
+              </button>
+            </>
+          )}
+
+          {user?.role === "admin" && (
+            <>
+              <Link to="/admin-dashboard" className={isActive("/admin-dashboard")}>
+                Admin
+              </Link>
+              <Link to="/notifications" className={isActive("/notifications")}>
+                Notifications
+              </Link>
               <button
                 onClick={handleLogout}
                 className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition"

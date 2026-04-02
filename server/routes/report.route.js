@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadReport, getPatientReports } from "../controllers/report.controller.js";
+import { uploadReport, getPatientReports } from "../controllers/report.portal.controller.js";
 
 const router = express.Router();
 

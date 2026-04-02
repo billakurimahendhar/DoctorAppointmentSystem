@@ -1,11 +1,13 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../lib/api";
 
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const getAuthBasePath = (role) => (role === "doctor" ? "/doctor" : "/patient");
 
   // 🌙 DARK MODE STATE
   const [darkMode, setDarkMode] = useState(
@@ -37,29 +39,39 @@ export const AppProvider = ({ children }) => {
   const loginUser = async (role, email, password) => {
     try {
       const endpoint =
-        role === "doctor"
-          ? "https://doctorappointmentsystem-0818.onrender.com/api/doctor/login"
-          : "https://doctorappointmentsystem-0818.onrender.com/api/patient/login";
+        role === "admin"
+          ? "/admin/login"
+          : role === "doctor"
+          ? "/doctor/login"
+          : "/patient/login";
 
-      const { data } = await axios.post(endpoint, { email, password });
-
+      const { data } = await api.post(endpoint, { email, password });
       if (data.success) {
+        const userRole = data.role || role;
         const newUser = {
           _id: data._id,
           name: data.name,
           email: data.email,
-          role,
+          role: userRole,
           token: data.token,
           profileImage: data.profileImage || "",
+          feesPerConsultation: data.feesPerConsultation || 0,
         };
         setUser(newUser);
         localStorage.setItem("user", JSON.stringify(newUser));
-        return { success: true };
+        localStorage.setItem("token", data.token);
+        return { success: true, user: newUser };
       }
+
       return { success: false };
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
-      return { success: false };
+      const message = err.response?.data?.message || "Login failed";
+      alert(message);
+      return {
+        success: false,
+        message,
+        requiresVerification: Boolean(err.response?.data?.requiresVerification),
+      };
     }
   };
 
@@ -67,25 +79,84 @@ export const AppProvider = ({ children }) => {
     try {
       const endpoint =
         role === "doctor"
-          ? "https://doctorappointmentsystem-0818.onrender.com/api/doctor/register"
-          : "https://doctorappointmentsystem-0818.onrender.com/api/patient/register";
+          ? "/doctor/register"
+          : "/patient/register";
 
-      const { data } = await axios.post(endpoint, form);
+      const { data } = await api.post(endpoint, form);
 
       if (data.success) {
-        alert("Registered successfully! Please login.");
-        return { success: true };
+        const message =
+          data.message || "Registered successfully. Please verify your email, then log in.";
+        alert(message);
+        return { success: true, message };
       }
       return { success: false };
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
-      return { success: false };
+      const message = err.response?.data?.message || "Registration failed";
+      alert(message);
+      return { success: false, message };
+    }
+  };
+
+  const forgotPassword = async (role, email) => {
+    try {
+      const { data } = await api.post(`${getAuthBasePath(role)}/forgot-password`, { email });
+      return { success: true, message: data.message };
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Could not send reset link",
+      };
+    }
+  };
+
+  const resetPassword = async (role, token, password) => {
+    try {
+      const { data } = await api.post(`${getAuthBasePath(role)}/reset-password`, {
+        token,
+        password,
+      });
+      return { success: true, message: data.message };
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Could not reset password",
+      };
+    }
+  };
+
+  const verifyEmail = async (role, token) => {
+    try {
+      const { data } = await api.get(`${getAuthBasePath(role)}/verify-email`, {
+        params: { token },
+      });
+      return { success: true, message: data.message };
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Could not verify email",
+      };
+    }
+  };
+
+  const resendVerificationEmail = async (role, email) => {
+    try {
+      const { data } = await api.post(`${getAuthBasePath(role)}/resend-verification`, {
+        email,
+      });
+      return { success: true, message: data.message };
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Could not resend verification email",
+      };
     }
   };
 
   const logoutUser = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (
@@ -93,8 +164,13 @@ export const AppProvider = ({ children }) => {
       value={{
         user,
         loading,
+        token: user?.token || localStorage.getItem("token") || "",
         loginUser,
         registerUser,
+        forgotPassword,
+        resetPassword,
+        verifyEmail,
+        resendVerificationEmail,
         logoutUser,
         darkMode,
         toggleTheme,

@@ -7,6 +7,7 @@ const appointmentSchema = new mongoose.Schema(
     slotId: { type: mongoose.Schema.Types.ObjectId, ref: "Slot", required: true },
     date: { type: String, required: true },
     time: { type: String, required: true },
+    reason: { type: String, default: "General Consultation" },
     status: {
       type: String,
       enum: ["booked", "cancelled", "completed"],
@@ -25,6 +26,21 @@ const appointmentSchema = new mongoose.Schema(
     paymentId: {
       type: String, // Razorpay payment ID (for online)
       default: "",
+    },
+    cancellationReason: { type: String, default: "" },
+    cancelledBy: {
+      type: String,
+      enum: ["patient", "doctor", "admin", "system", ""],
+      default: "",
+    },
+    rescheduledFrom: {
+      date: { type: String, default: "" },
+      time: { type: String, default: "" },
+      slotId: { type: String, default: "" },
+    },
+    rescheduledAt: {
+      type: Date,
+      default: null,
     },
   },
   { timestamps: true }

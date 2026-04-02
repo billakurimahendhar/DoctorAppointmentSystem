@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 
 export default function UploadReportPage() {
   const { state } = useLocation();
@@ -20,7 +20,7 @@ export default function UploadReportPage() {
 
   const handleUpload = async () => {
   try {
-    await axios.post("https://doctorappointmentsystem-0818.onrender.com/api/reports/upload", {
+    await api.post("/reports/upload", {
       doctorId: doctor._id,
       patientId: appointment.patientId._id,
       appointmentId: appointment._id,
@@ -55,7 +55,7 @@ export default function UploadReportPage() {
 
 
   const finishAppointment = async () => {
-    await axios.put(`https://doctorappointmentsystem-0818.onrender.com/api/appointments/complete/${appointment._id}`);
+    await api.put(`/appointments/complete/${appointment._id}`);
     navigate("/doctor-home");
   };
 
