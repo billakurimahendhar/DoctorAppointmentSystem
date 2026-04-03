@@ -1,6 +1,9 @@
 import crypto from "crypto";
 import { razorpayInstance } from "../config/razorpay.js";
 import Appointment from "../models/appointment.model.js";
+import Doctor from "../models/doctor.model.js";
+import Patient from "../models/patient.model.js";
+import { createNotifications } from "../utils/notify.js";
 
 // 🧾 1️⃣ Create Razorpay Order
 export const createOrder = async (req, res) => {
@@ -37,10 +40,39 @@ export const verifyPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid signature" });
 
     // Update appointment payment
-    await Appointment.findByIdAndUpdate(appointmentId, {
+    const appointment = await Appointment.findByIdAndUpdate(appointmentId, {
       paymentMode: "online",
       paymentStatus: "paid",
+      paymentId: razorpay_payment_id,
     });
+
+    if (appointment) {
+      const [doctor, patient] = await Promise.all([
+        Doctor.findById(appointment.doctorId).lean(),
+        Patient.findById(appointment.patientId).lean(),
+      ]);
+
+      await createNotifications([
+        {
+          recipientId: appointment.patientId,
+          recipientRole: "patient",
+          title: "Payment received",
+          message: `Your payment for the appointment on ${appointment.date} at ${appointment.time} was successful.`,
+          type: "payment",
+          actionUrl: "/patient-appointments",
+          email: patient?.email,
+        },
+        {
+          recipientId: appointment.doctorId,
+          recipientRole: "doctor",
+          title: "Appointment paid online",
+          message: `${patient?.name || "A patient"} completed online payment for the appointment on ${appointment.date} at ${appointment.time}.`,
+          type: "payment",
+          actionUrl: "/doctor/appointments",
+          email: doctor?.email,
+        },
+      ]);
+    }
 
     res.status(200).json({ success: true, message: "Payment verified successfully" });
   } catch (error) {

@@ -1,5 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 
 import cors from "cors";
 import express from "express";
@@ -12,18 +11,26 @@ import appointmentRoute from "./routes/appointment.route.js";
 import reportRoute from "./routes/report.route.js";
 import courseRoute from "./routes/course.route.js";
 import paymentRoute from "./routes/payment.route.js";
+import notificationRoute from "./routes/notification.route.js";
+import reviewRoute from "./routes/review.route.js";
+import adminRoute from "./routes/admin.route.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://doctor-appointment-system-x6xp.vercel.app",
+].filter(Boolean);
 
 // connect DB
+
 connectDB();
 
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://doctor-appointment-system-x6xp.vercel.app"
-  ],
+  origin: allowedOrigins,
   methods: ["GET","POST","PUT","DELETE","PATCH","OPTIONS"],
   allowedHeaders: ["Content-Type","Authorization"],
   credentials: true
@@ -42,6 +49,9 @@ app.use("/api/appointments", appointmentRoute);
 app.use("/api/reports", reportRoute);
 app.use("/api/courses", courseRoute);
 app.use("/api/payment", paymentRoute);
+app.use("/api/notifications", notificationRoute);
+app.use("/api/reviews", reviewRoute);
+app.use("/api/admin", adminRoute);
 
 app.listen(port, () => {
   console.log(`🚀 Server started on PORT: ${port}`);

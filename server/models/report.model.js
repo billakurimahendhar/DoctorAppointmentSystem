@@ -7,7 +7,7 @@ const reportSchema = new mongoose.Schema(
     appointmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Appointment", required: true },
 
     diseaseName: { type: String, required: true }, // 👈 important
-    testType: { type: String, required: true },
+    testType: { type: String, default: "General Checkup" },
     value: { type: Number, required: true },
     unit: { type: String },
 

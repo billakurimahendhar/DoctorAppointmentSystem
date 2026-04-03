@@ -14,6 +14,7 @@ export default function Register() {
     qualification: "",
     specialization: "",
     experience: "",
+    feesPerConsultation: "",
   });
 
   const handleChange = (e) => {
@@ -33,6 +34,7 @@ export default function Register() {
             qualification: form.qualification,
             specialization: form.specialization,
             experience: form.experience,
+            feesPerConsultation: Number(form.feesPerConsultation || 0),
           }
         : {
             name: form.name,
@@ -129,6 +131,16 @@ export default function Register() {
               value={form.experience}
               onChange={handleChange}
               required
+            />
+
+            <input
+              type="number"
+              name="feesPerConsultation"
+              placeholder="Consultation Fee"
+              className="border p-3 rounded w-full mb-4"
+              value={form.feesPerConsultation}
+              onChange={handleChange}
+              min="0"
             />
           </>
         )}

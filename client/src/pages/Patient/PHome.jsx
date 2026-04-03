@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../lib/api";
 
 /* Debounce Hook */
 function useDebounce(value, delay) {
@@ -23,7 +23,7 @@ export default function PHome() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("https://doctorappointmentsystem-0818.onrender.com/api/doctor");
+        const res = await api.get("/doctor");
         setDoctors(res.data.doctors || []);
       } catch (err) {
         console.error("Error fetching doctors", err);

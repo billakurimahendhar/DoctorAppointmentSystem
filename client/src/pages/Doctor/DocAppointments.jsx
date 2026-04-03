@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../lib/api";
 
 export default function DocAppointments() {
   const navigate = useNavigate();
@@ -15,9 +15,7 @@ export default function DocAppointments() {
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get(
-        `https://doctorappointmentsystem-0818.onrender.com/api/appointments/doctor/${doctor._id}`
-      );
+      const res = await api.get(`/appointments/doctor/${doctor._id}`);
       setAppointments(res.data.appointments || []);
     } catch (err) {
       console.error("Error fetching appointments:", err);

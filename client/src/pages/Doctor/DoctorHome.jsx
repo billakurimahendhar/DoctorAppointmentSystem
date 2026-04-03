@@ -1,8 +1,8 @@
 // client/src/pages/Doctor/DoctorHome.jsx
 
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../lib/api";
 
 export default function DoctorHome() {
   const navigate = useNavigate();
@@ -23,9 +23,7 @@ export default function DoctorHome() {
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get(
-        `https://doctorappointmentsystem-0818.onrender.com/api/appointments/doctor/${doctor._id}`
-      );
+      const res = await api.get(`/appointments/doctor/${doctor._id}`);
       setAppointments(res.data.appointments || []);
     } catch (err) {
       console.error("Error fetching appointments:", err);
@@ -42,8 +40,8 @@ export default function DoctorHome() {
     formData.append("image", file);
 
     try {
-      const res = await axios.post(
-        `https://doctorappointmentsystem-0818.onrender.com/api/doctor/${doctor._id}/upload-photo`,
+      const res = await api.post(
+        `/doctor/${doctor._id}/upload-photo`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -16,22 +15,20 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
+import api, { getAuthHeaders } from "../lib/api";
 
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     if (!user) return;
-    axios
-      .get(
-        `https://doctorappointmentsystem-0818.onrender.com/api/appointments?userId=${user._id}&role=doctor`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+    api
+      .get(`/appointments?userId=${user._id}&role=doctor`, {
+        headers: getAuthHeaders(),
+      })
       .then((res) => setAppointments(res.data.appointments || []))
       .catch((err) => console.error(err));
-  }, [user, token]);
+  }, [user]);
 
   /* ---------------- METRICS ---------------- */
   const metrics = useMemo(() => {

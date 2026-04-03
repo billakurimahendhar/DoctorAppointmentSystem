@@ -1,6 +1,6 @@
 // frontend/src/pages/Doctor/DoctorReports.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 
 export default function DoctorReports() {
   const doctor = JSON.parse(localStorage.getItem("user")); // logged in doctor
@@ -21,9 +21,7 @@ export default function DoctorReports() {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get(
-          `https://doctorappointmentsystem-0818.onrender.com/api/appointments/doctor/${doctor._id}`
-        );
+        const res = await api.get(`/appointments/doctor/${doctor._id}`);
         setAppointments(res.data.appointments || []);
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -57,10 +55,7 @@ export default function DoctorReports() {
         date,
       };
 
-      const res = await axios.post(
-        "https://doctorappointmentsystem-0818.onrender.com/api/reports/upload",
-        payload
-      );
+      const res = await api.post("/reports/upload", payload);
 
       alert(res.data.message || "Report uploaded");
       // reset
