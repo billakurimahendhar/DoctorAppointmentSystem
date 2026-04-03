@@ -4,7 +4,7 @@ const emailUser = (process.env.EMAIL_USER || "").trim();
 let emailPass = (process.env.EMAIL_PASS || "").trim();
 console.log(emailUser);
 console.log(process.env.EMAIL_USER);
-console.log(emailPass);
+
 
 
 // Remove wrapping quotes, which can be introduced by some .env editors
@@ -30,13 +30,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-transporter.verify((error, success) => {
+/*transporter.verify((error, success) => {
   if (error) {
     console.error("❌ Nodemailer transporter verification failed:", error.message);
   } else {
     console.log("✅ Nodemailer transporter ready");
   }
-});
+});*/
 
 export const sendEmail = async (to, subject, html) => {
   if (!emailUser || !emailPass) {
