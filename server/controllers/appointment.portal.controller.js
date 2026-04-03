@@ -81,6 +81,13 @@ export const bookAppointment = async (req, res) => {
       Patient.findById(patientId).lean(),
     ]);
 
+    console.log("Creating notifications for appointment booking", {
+      doctorId,
+      patientId,
+      date,
+      time,
+    });
+
     await createNotifications([
       {
         recipientId: patientId,
@@ -101,7 +108,7 @@ export const bookAppointment = async (req, res) => {
         email: doctor?.email,
       },
     ]);
-
+    console.log("Notifications created successfully");
     res.status(201).json({ success: true, appointment });
   } catch (error) {
     if (claimedSlot?._id) {
