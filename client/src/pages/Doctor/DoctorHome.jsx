@@ -51,7 +51,7 @@ export default function DoctorHome() {
       const updatedUser = { ...doctor, profileImage: res.data.profileImage };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setDoctor(updatedUser); // 🔥 refresh UI
-    } catch (err) {
+    } catch {
       alert("Upload failed");
     }
   };
@@ -108,10 +108,14 @@ export default function DoctorHome() {
               Manage your appointments and patient reports
             </p>
 
-            <label className="inline-block mt-4 cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow">
-              Change Profile Photo
-              <input type="file" hidden onChange={handlePhotoUpload} />
-            </label>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <label className="inline-block cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow">
+                Change Profile Photo
+                <input type="file" hidden onChange={handlePhotoUpload} />
+              </label>
+
+
+            </div>
           </div>
         </div>
       </div>
@@ -152,6 +156,17 @@ export default function DoctorHome() {
                   className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 text-sm font-medium"
                 >
                   Upload Report
+                </button>
+
+                <button
+                  onClick={() =>
+                    navigate("/doctor-reports", {
+                      state: { patientId: a.patientId?._id, appointmentId: a._id },
+                    })
+                  }
+                  className="w-full mt-2 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium"
+                >
+                  View Patient Reports
                 </button>
               </div>
             ))}
@@ -200,10 +215,14 @@ export default function DoctorHome() {
                   </div>
 
                   <button
-                    disabled
-                    className="mt-4 w-full bg-gray-300 text-gray-600 py-2 rounded-lg text-sm"
+                    onClick={() =>
+                      navigate("/doctor-reports", {
+                        state: { patientId: a.patientId?._id, appointmentId: a._id },
+                      })
+                    }
+                    className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 text-sm"
                   >
-                    Report Uploaded
+                    View Patient Reports
                   </button>
                 </div>
               ))}
