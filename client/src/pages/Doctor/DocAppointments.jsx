@@ -83,16 +83,27 @@ export default function DocAppointments() {
                         state: { appointment: a },
                       })
                     }
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 text-sm font-medium"
+                    className="w-full mb-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 text-sm font-medium"
                   >
                     Upload Report
                   </button>
                 )}
 
+                <button
+                  onClick={() =>
+                    navigate("/doctor-reports", {
+                      state: { patientId: a.patientId?._id, appointmentId: a._id },
+                    })
+                  }
+                  className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium"
+                >
+                  View Patient Reports
+                </button>
+
                 {a.status === "completed" && (
                   <button
                     disabled
-                    className="w-full bg-gray-300 text-gray-600 py-2 rounded-lg text-sm"
+                    className="w-full mt-2 bg-gray-300 text-gray-600 py-2 rounded-lg text-sm"
                   >
                     Report Uploaded
                   </button>
