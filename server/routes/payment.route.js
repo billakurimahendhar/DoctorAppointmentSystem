@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/create-order", createOrder);
 router.post("/verify", verifyPayment);
-app.get("/test-razorpay", async (req, res) => {
+router.get("/test-razorpay", async (req, res) => {
   try {
     const response = await axios.get("https://api.razorpay.com");
     res.send("Razorpay reachable");
