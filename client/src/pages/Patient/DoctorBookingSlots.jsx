@@ -91,6 +91,7 @@ export default function DoctorBookingSlots() {
 
   const bookAppointment = async (slot, paymentMode) => {
     try {
+      console.log("Booking appointment with slot:", slot, "and payment mode:", paymentMode);
       const { data: booking } = await api.post("/appointments/book", {
         doctorId,
         patientId: patient._id,
@@ -100,6 +101,7 @@ export default function DoctorBookingSlots() {
         paymentMode,
         reason,
       });
+      console.log("Received booking response from server:", booking);
 
       if (paymentMode === "offline") {
         alert("Appointment booked successfully");
