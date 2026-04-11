@@ -24,6 +24,7 @@ const attachReviewsToAppointments = async (appointments = []) => {
 
 export const bookAppointment = async (req, res) => {
   let claimedSlot = null;
+  console.log("Received appointment booking request with data:", req.body); // Debug log
 
   try {
     const {
@@ -53,7 +54,7 @@ export const bookAppointment = async (req, res) => {
       },
       { new: true }
     );
-
+   console.log("Slot claim result:", claimedSlot); // Debug log
     if (!claimedSlot) {
       return res.status(400).json({ message: "Slot already booked or unavailable" });
     }
