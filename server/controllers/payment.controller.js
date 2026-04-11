@@ -22,6 +22,8 @@ const getMissingRazorpayEnv = () => {
 // 🧾 1️⃣ Create Razorpay Order
 export const createOrder = async (req, res) => {
   try {
+     console.log("🔥 [CREATE ORDER] API HIT");
+    console.log("📥 Request Body:", req.body);
     const missingEnv = getMissingRazorpayEnv();
     if (missingEnv.length) {
       return res.status(500).json({
