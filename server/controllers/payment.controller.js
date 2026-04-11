@@ -144,12 +144,3 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-app.get("/test-razorpay", async (req, res) => {
-  try {
-    const response = await axios.get("https://api.razorpay.com");
-    res.send("Razorpay reachable");
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Cannot reach Razorpay");
-  }
-});
