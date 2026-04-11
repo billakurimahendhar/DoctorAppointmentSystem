@@ -107,10 +107,13 @@ export default function DoctorBookingSlots() {
         return;
       }
 
+
+       console.log("Initiating online payment for appointment:", booking);
       const { data } = await api.post("/payment/create-order", {
         amount: doctor?.feesPerConsultation || 500,
         appointmentId: booking.appointment._id,
       });
+      console.log("Received order details from server:", data);
 
       if (!window.Razorpay) {
         throw new Error("Razorpay checkout failed to load");
