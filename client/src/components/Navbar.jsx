@@ -1,147 +1,211 @@
-import { useContext } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import { AppContext } from "../context/AppContext";
-import logo from "../assets/logo.svg"; // ✅ add this line
+import logo from "../assets/logo.svg";
 
 export default function Navbar() {
   const { user, logoutUser } = useContext(AppContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const navLinks = useMemo(() => {
+    if (!user) {
+      return [
+        { to: "/login", label: "Login" },
+        { to: "/register", label: "Register" },
+      ];
+    }
+
+    if (user.role === "doctor") {
+      return [
+        { to: "/doctor-dashboard", label: "Dashboard" },
+        { to: "/doctor-slots", label: "Availability" },
+        { to: "/doctor/appointments", label: "Appointments" },
+        { to: "/doctor-courses", label: "Health Videos" },
+        { to: "/notifications", label: "Notifications" },
+      ];
+    }
+
+    if (user.role === "patient") {
+      return [
+        { to: "/patient-home", label: "Home" },
+        { to: "/patient-appointments", label: "Appointments" },
+        { to: "/patient-reports", label: "Reports" },
+        { to: "/patient-courses", label: "Health Videos" },
+        { to: "/doctors", label: "Doctors" },
+        { to: "/patient-timeline", label: "Timeline" },
+        { to: "/notifications", label: "Notifications" },
+      ];
+    }
+
+    return [
+      { to: "/admin-dashboard", label: "Admin" },
+      { to: "/notifications", label: "Notifications" },
+    ];
+  }, [user]);
+
+  const profileLink =
+    user?.role === "doctor"
+      ? "/doctor-home"
+      : user?.role === "patient"
+      ? "/patient-home"
+      : user?.role === "admin"
+      ? "/admin-dashboard"
+      : "/";
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
+    setMenuOpen(false);
     logoutUser();
     navigate("/login");
   };
 
   const isActive = (path) =>
-    location.pathname.startsWith(path)
-      ? "text-yellow-300 font-semibold"
-      : "hover:text-gray-200";
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+  const desktopLinkClass = (path) =>
+    isActive(path)
+      ? "font-semibold text-yellow-300"
+      : "text-white/90 hover:text-white";
+
+  const mobileLinkClass = (path) =>
+    isActive(path)
+      ? "bg-blue-800 text-yellow-300"
+      : "bg-blue-600/20 text-white hover:bg-blue-600/30";
 
   return (
-    <nav className="bg-blue-700 text-white py-3 shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
-        
-        {/* 🔷 Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
+    <nav className="sticky top-0 z-50 bg-blue-700 text-white shadow-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <Link to="/" className="group flex min-w-0 items-center gap-2">
           <img
             src={logo}
             alt="MediConnect Logo"
             className="h-10 w-auto transition-transform duration-300 group-hover:scale-110"
           />
-          <span className="text-2xl font-bold tracking-wide hidden sm:block">
+          <span className="hidden truncate text-xl font-bold tracking-wide sm:block lg:text-2xl">
             MediConnect
           </span>
         </Link>
 
-        {/* Right Section */}
-        <div className="flex items-center gap-6">
-          {/* 🌍 Public Navbar */}
-          {!user && (
-            <>
-              <Link to="/login" className="hover:underline">Login</Link>
-              <Link
-                to="/register"
-                className="border border-white px-4 py-1 rounded-lg hover:bg-white hover:text-blue-700"
-              >
-                Register
-              </Link>
-            </>
+        <div className="hidden items-center gap-4 lg:flex">
+          {navLinks.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={desktopLinkClass(item.to)}
+            >
+              {item.label}
+            </Link>
+          ))}
+
+          {user?.role === "doctor" && (
+            <Link to={profileLink} className="flex items-center gap-2">
+              <img
+                src={
+                  user.profileImage ||
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                }
+                alt="Doctor"
+                className="h-9 w-9 rounded-full border-2 border-white object-cover transition-transform duration-200 hover:scale-110"
+              />
+            </Link>
           )}
 
-          {/* 👨‍⚕️ Doctor Navbar */}
-          {user?.role === "doctor" && (
-            <>
-              <Link to="/doctor-dashboard" className={isActive("/doctor-dashboard")}>
-                Dashboard
-              </Link>
-              <Link to="/doctor-slots" className={isActive("/doctor-slots")}>
-                Availability
-              </Link>
-              <Link to="/doctor/appointments" className={isActive("/doctor/appointments")}>
-                My Appointments
-              </Link>
-              <Link to="/notifications" className={isActive("/notifications")}>
-                Notifications
-              </Link>
-              
-              <Link to="/doctor-courses" className={isActive("/doctor-courses")}>
-                health Videos
-              </Link>
+          {!user ? (
+            <Link
+              to="/register"
+              className="rounded-lg border border-white px-4 py-2 font-medium hover:bg-white hover:text-blue-700"
+            >
+              Register
+            </Link>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="rounded-lg bg-white px-4 py-2 font-medium text-blue-700 transition hover:bg-gray-100"
+            >
+              Logout
+            </button>
+          )}
+        </div>
 
-              {/* Profile Image */}
-              <Link to={`/doctor-home`} className="flex items-center gap-2">
+        <div className="flex items-center gap-3 lg:hidden">
+          {user && (
+            <Link to={profileLink} className="max-w-[160px] truncate text-sm font-medium">
+              {user.name}
+            </Link>
+          )}
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            className="rounded-lg border border-white/30 p-2 transition hover:bg-blue-800"
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </div>
+
+      {menuOpen && (
+        <div className="border-t border-white/10 bg-blue-700/95 px-4 py-4 shadow-lg backdrop-blur lg:hidden sm:px-6">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3">
+            {user && (
+              <Link
+                to={profileLink}
+                className="flex items-center gap-3 rounded-2xl bg-blue-800/60 p-3"
+              >
                 <img
                   src={
                     user.profileImage ||
                     "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                   }
-                  alt="Doctor"
-                  className="w-9 h-9 rounded-full border-2 border-white object-cover hover:scale-110 transition-transform duration-200"
+                  alt={user.name || "User"}
+                  className="h-10 w-10 rounded-full border border-white/40 object-cover"
                 />
+                <div className="min-w-0">
+                  <p className="truncate font-semibold">{user.name}</p>
+                  <p className="text-sm capitalize text-blue-100">{user.role}</p>
+                </div>
               </Link>
+            )}
 
+            <div className="grid gap-2">
+              {navLinks.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`rounded-xl px-4 py-3 text-sm font-medium transition ${mobileLinkClass(
+                    item.to
+                  )}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            {!user ? (
+              <Link
+                to="/register"
+                className="rounded-xl border border-white bg-white px-4 py-3 text-center font-medium text-blue-700"
+              >
+                Create account
+              </Link>
+            ) : (
               <button
                 onClick={handleLogout}
-                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition"
+                className="rounded-xl bg-white px-4 py-3 font-medium text-blue-700 transition hover:bg-gray-100"
               >
                 Logout
               </button>
-            </>
-          )}
-
-          {/* 🧑‍🤝‍🧑 Patient Navbar */}
-          {user?.role === "patient" && (
-            <>
-              <Link to="/patient-home" className={isActive("/patient-home")}>
-                Home
-              </Link>
-              <Link to="/patient-appointments" className={isActive("/patient-appointments")}>
-                Appointments
-              </Link>
-              <Link to="/patient-reports" className={isActive("/patient-reports")}>
-                Reports
-              </Link>
-              <Link to="/patient-courses" className={isActive("/patient-courses")}>
-                Health Videos
-              </Link>
-              <Link to="/doctors" className={isActive("/doctors")}>
-                Doctors
-              </Link>
-              <Link to="/patient-timeline" className={isActive("/patient-timeline")}>
-                Timeline
-              </Link>
-              <Link to="/notifications" className={isActive("/notifications")}>
-                Notifications
-              </Link>
-
-              <button
-                onClick={handleLogout}
-                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition"
-              >
-                Logout
-              </button>
-            </>
-          )}
-
-          {user?.role === "admin" && (
-            <>
-              <Link to="/admin-dashboard" className={isActive("/admin-dashboard")}>
-                Admin
-              </Link>
-              <Link to="/notifications" className={isActive("/notifications")}>
-                Notifications
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-gray-100 transition"
-              >
-                Logout
-              </button>
-            </>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 }

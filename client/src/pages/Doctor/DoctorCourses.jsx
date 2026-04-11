@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
 import { PlusCircle, X } from "lucide-react";
 
 export default function DoctorCourses() {
@@ -13,8 +12,21 @@ export default function DoctorCourses() {
   const doctor = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    if (doctor?._id) fetchCourses();
-  }, []);
+    if (!doctor?._id) {
+      return;
+    }
+
+    const fetchCourses = async () => {
+      try {
+        const res = await axios.get(`https://doctorappointmentsystem-0818.onrender.com/api/courses/${doctor._id}`);
+        setCourses(res.data.courses || []);
+      } catch (err) {
+        console.error("Error fetching courses:", err);
+      }
+    };
+
+    fetchCourses();
+  }, [doctor?._id]);
 
   const fetchCourses = async () => {
     try {
@@ -56,41 +68,38 @@ export default function DoctorCourses() {
   };
 
   return (
-    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 py-10 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <h2 className="text-4xl font-extrabold text-blue-700 tracking-tight">
+    <div className="page-shell">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-3xl font-extrabold tracking-tight text-blue-700 sm:text-4xl">
             My Educational Courses
           </h2>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-700 text-white px-5 py-2.5 rounded-lg hover:bg-blue-800 transition-all duration-200"
+            className="flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-3 text-white transition-all duration-200 hover:bg-blue-800"
           >
             <PlusCircle size={22} /> Upload Course
           </button>
         </div>
 
-        {/* Course Grid */}
         {courses.length === 0 ? (
-          <p className="text-center text-gray-500 mt-20 text-lg">
-            You haven’t uploaded any courses yet.
+          <p className="mt-20 text-center text-base text-gray-500 sm:text-lg">
+            You have not uploaded any courses yet.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {courses.map((course) => (
-              <motion.div
+              <div
                 key={course._id}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
+                className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-transform duration-200 hover:-translate-y-1"
               >
-                <div className="relative w-full aspect-video bg-gray-200">
+                <div className="relative aspect-video w-full bg-gray-200">
                   <video
                     muted
                     controls
                     playsInline
                     preload="metadata"
-                    className="object-cover w-full h-full"
+                    className="h-full w-full object-cover"
                   >
                     <source
                       src={`${course.videoUrl.replace("/upload/", "/upload/f_mp4/")}`}
@@ -100,83 +109,70 @@ export default function DoctorCourses() {
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-2xl font-semibold text-blue-700 mb-2">
+                  <h3 className="mb-2 text-2xl font-semibold text-blue-700">
                     {course.title}
                   </h3>
-                  <p className="text-gray-600 mb-3 leading-relaxed">
+                  <p className="mb-3 text-gray-600">
                     {course.description || "No description provided."}
                   </p>
                   <p className="text-sm text-gray-400">
                     Uploaded on {new Date(course.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Upload Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-white rounded-2xl p-8 shadow-xl w-[90%] max-w-md relative"
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute right-4 top-4 text-gray-500 hover:text-red-500"
             >
+              <X size={22} />
+            </button>
+
+            <h2 className="mb-6 pr-10 text-2xl font-bold text-blue-700">
+              Upload New Course
+            </h2>
+
+            <form onSubmit={handleUpload} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Course Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <textarea
+                placeholder="Description (optional)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-blue-500"
+                rows="3"
+              />
+              <input
+                type="file"
+                accept="video/*"
+                onChange={(e) => setVideo(e.target.files[0])}
+                className="w-full rounded-lg border p-3 text-sm"
+                required
+              />
               <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-blue-700 py-3 text-white hover:bg-blue-800"
               >
-                <X size={22} />
+                {loading ? "Uploading..." : "Upload Course"}
               </button>
-
-              <h2 className="text-2xl font-bold text-blue-700 mb-6">
-                Upload New Course
-              </h2>
-
-              <form onSubmit={handleUpload} className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Course Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-                <textarea
-                  placeholder="Description (optional)"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
-                  rows="3"
-                />
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => setVideo(e.target.files[0])}
-                  className="w-full border p-3 rounded-lg"
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-700 text-white py-3 rounded-lg hover:bg-blue-800"
-                >
-                  {loading ? "Uploading..." : "Upload Course"}
-                </button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

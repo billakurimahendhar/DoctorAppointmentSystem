@@ -110,10 +110,62 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden antialiased;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  button,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply min-h-screen bg-slate-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10;
+  }
+
+  .page-container {
+    @apply mx-auto w-full max-w-7xl;
+  }
+
+  .surface-card {
+    @apply rounded-[1.75rem] bg-white p-5 shadow-sm sm:p-6;
+  }
+
+  .form-shell {
+    @apply flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-8 sm:px-6;
+  }
+
+  .form-card {
+    @apply w-full max-w-md rounded-2xl bg-white p-5 shadow-lg sm:p-8;
+  }
+
+  .chart-scroll {
+    @apply overflow-x-auto;
+  }
+
+  .chart-frame {
+    @apply h-44 min-w-[320px] sm:min-w-0;
   }
 }

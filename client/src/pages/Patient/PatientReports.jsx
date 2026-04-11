@@ -41,25 +41,25 @@ export default function PatientReports() {
 
   if (loading)
     return (
-      <div className="h-screen flex items-center justify-center text-blue-600 text-lg font-semibold">
+      <div className="flex h-screen items-center justify-center text-lg font-semibold text-blue-600">
         Loading reports...
       </div>
     );
 
   if (!Object.keys(groupedReports).length)
     return (
-      <div className="h-screen flex items-center justify-center text-red-600 text-lg font-semibold">
+      <div className="flex h-screen items-center justify-center px-4 text-center text-lg font-semibold text-red-600">
         No reports found.
       </div>
     );
 
   return (
-    <div className="min-h-screen from-blue-50 via-white to-indigo-50 p-6 md:p-10">
-      <h1 className="text-3xl font-bold text-blue-700 text-center mb-12">
-        My Health Reports 📊
+    <div className="page-shell">
+      <h1 className="mb-10 text-center text-3xl font-bold text-blue-700 sm:mb-12">
+        My Health Reports
       </h1>
 
-      <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
         {Object.entries(groupedReports).map(([disease, reports]) => {
           const [min, max] = normalRanges[disease] || [0, Infinity];
           const latest = reports[reports.length - 1];
@@ -74,10 +74,10 @@ export default function PatientReports() {
           return (
             <div
               key={disease}
-              className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition"
+              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-lg transition hover:shadow-xl"
             >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-blue-700 capitalize">
+              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="text-lg font-semibold capitalize text-blue-700">
                   {disease}
                 </h2>
                 <span className={`text-sm font-semibold ${status.color}`}>
@@ -85,87 +85,82 @@ export default function PatientReports() {
                 </span>
               </div>
 
-              <div className="h-44 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={reports}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} />
+              <div className="chart-scroll">
+                <div className="chart-frame">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={reports}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            const point = payload[0].payload;
+                            const abnormal = point.value < min || point.value > max;
 
-                    {/* ⭐ UPDATED TOOLTIP WITH MEDICINES */}
-                    <Tooltip
-                      content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                          const point = payload[0].payload;
+                            return (
+                              <div className="rounded-lg border bg-white p-3 text-sm shadow-lg">
+                                <p className="font-semibold text-blue-700">
+                                  {label}
+                                </p>
+                                <p>
+                                  Value: <span className="font-semibold">{point.value}</span> {point.unit || ""}
+                                </p>
+
+                                <p
+                                  className={`mt-1 font-semibold ${
+                                    abnormal ? "text-red-600" : "text-green-600"
+                                  }`}
+                                >
+                                  {abnormal ? "Abnormal" : "Normal"}
+                                </p>
+
+                                {point.prescribedMedicines?.length > 0 && (
+                                  <>
+                                    <p className="mt-2 font-semibold text-gray-700">
+                                      Medicines:
+                                    </p>
+                                    <ul className="ml-4 list-disc text-gray-600">
+                                      {point.prescribedMedicines.map((med, index) => (
+                                        <li key={index}>{med}</li>
+                                      ))}
+                                    </ul>
+                                  </>
+                                )}
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#2563eb"
+                        strokeWidth={2}
+                        dot={(dotProps) => {
                           const abnormal =
-                            point.value < min || point.value > max;
+                            dotProps.payload.value < min ||
+                            dotProps.payload.value > max;
 
                           return (
-                            <div className="bg-white border shadow-lg rounded-lg p-3 text-sm">
-                              <p className="font-semibold text-blue-700">
-                                {label}
-                              </p>
-                              <p>
-                                Value:{" "}
-                                <span className="font-semibold">
-                                  {point.value}
-                                </span>{" "}
-                                {point.unit || ""}
-                              </p>
-
-                              <p
-                                className={`mt-1 font-semibold ${
-                                  abnormal ? "text-red-600" : "text-green-600"
-                                }`}
-                              >
-                                {abnormal ? "Abnormal" : "Normal"}
-                              </p>
-
-                              {point.prescribedMedicines?.length > 0 && (
-                                <>
-                                  <p className="mt-2 font-semibold text-gray-700">
-                                    Medicines:
-                                  </p>
-                                  <ul className="list-disc ml-4 text-gray-600">
-                                    {point.prescribedMedicines.map((med, i) => (
-                                      <li key={i}>{med}</li>
-                                    ))}
-                                  </ul>
-                                </>
-                              )}
-                            </div>
+                            <Dot
+                              cx={dotProps.cx}
+                              cy={dotProps.cy}
+                              r={4}
+                              fill={abnormal ? "red" : "#2563eb"}
+                            />
                           );
-                        }
-                        return null;
-                      }}
-                    />
-
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#2563eb"
-                      strokeWidth={2}
-                      dot={(dotProps) => {
-                        const abnormal =
-                          dotProps.payload.value < min ||
-                          dotProps.payload.value > max;
-
-                        return (
-                          <Dot
-                            cx={dotProps.cx}
-                            cy={dotProps.cy}
-                            r={4}
-                            fill={abnormal ? "red" : "#2563eb"}
-                          />
-                        );
-                      }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                        }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
 
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg border text-sm">
-                <p className="font-semibold text-blue-700 mb-1">
+              <div className="mt-4 rounded-lg border bg-blue-50 p-3 text-sm">
+                <p className="mb-1 font-semibold text-blue-700">
                   AI Suggestion
                 </p>
                 <p className="text-gray-700">

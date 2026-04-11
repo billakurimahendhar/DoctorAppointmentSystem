@@ -73,7 +73,7 @@ export default function DoctorDirectory() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-10">
+    <div className="page-shell">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="rounded-[2rem] bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold text-slate-900">Find Your Doctor</h1>
@@ -167,7 +167,7 @@ export default function DoctorDirectory() {
                 <p>Fee: Rs. {doctor.feesPerConsultation || 0}</p>
               </div>
 
-              <div className="mt-5 flex gap-3">
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <Link
                   to={`/doctors/${doctor._id}`}
                   className="flex-1 rounded-xl bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
@@ -194,3 +194,4 @@ export default function DoctorDirectory() {
     </div>
   );
 }
+

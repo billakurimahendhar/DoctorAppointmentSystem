@@ -310,97 +310,120 @@ export default function UploadReportPage() {
     }
   };
 
-
   const finishAppointment = async () => {
     await api.put(`/appointments/complete/${appointment._id}`);
     navigate("/doctor-home");
   };
 
   return (
-    <div className="mx-auto max-w-xl rounded-xl bg-white p-8 shadow">
-      <h2 className="mb-4 text-2xl font-bold">Upload Patient Report</h2>
+    <div className="page-shell">
+      <div className="mx-auto max-w-3xl space-y-5">
+        {appointment && (
+          <div className="surface-card">
+            <p className="text-sm font-medium text-slate-500">Patient</p>
+            <h1 className="mt-1 text-2xl font-bold text-slate-900">
+              {appointment.patientId?.name}
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Appointment on {appointment.date} at {appointment.time}
+            </p>
+          </div>
+        )}
 
-      <select
-        value={report.diseaseName}
-        onChange={handleDiseaseChange}
-        className="mb-3 w-full border p-2"
-      >
-        <option value="">Select Disease</option>
-        {diseaseCatalog.map((disease) => (
-          <option key={disease.value} value={disease.value}>
-            {disease.label}
-          </option>
-        ))}
-      </select>
+        <div className="surface-card space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">Upload Patient Report</h2>
 
-      <select
-        value={report.testType}
-        onChange={handleTestTypeChange}
-        className="mb-3 w-full border p-2"
-        disabled={!report.diseaseName}
-      >
-        <option value="">Select Test Type</option>
-        {availableTestTypes.map((testType) => (
-          <option key={testType.value} value={testType.value}>
-            {testType.label}
-          </option>
-        ))}
-      </select>
+          <select
+            value={report.diseaseName}
+            onChange={handleDiseaseChange}
+            className="w-full rounded-xl border p-3"
+          >
+            <option value="">Select Disease</option>
+            {diseaseCatalog.map((disease) => (
+              <option key={disease.value} value={disease.value}>
+                {disease.label}
+              </option>
+            ))}
+          </select>
 
-      <select
-        value={report.unit}
-        onChange={(event) =>
-          setReport((current) => ({ ...current, unit: event.target.value }))
-        }
-        className="mb-3 w-full border p-2"
-        disabled={!report.testType}
-      >
-        <option value="">Select Unit</option>
-        {availableUnits.map((unit) => (
-          <option key={unit} value={unit}>
-            {unit}
-          </option>
-        ))}
-      </select>
+          <select
+            value={report.testType}
+            onChange={handleTestTypeChange}
+            className="w-full rounded-xl border p-3"
+            disabled={!report.diseaseName}
+          >
+            <option value="">Select Test Type</option>
+            {availableTestTypes.map((testType) => (
+              <option key={testType.value} value={testType.value}>
+                {testType.label}
+              </option>
+            ))}
+          </select>
 
-      <input
-        placeholder="Value"
-        type="number"
-        className="mb-3 w-full border p-2"
-        value={report.value}
-        onChange={(event) =>
-          setReport((current) => ({ ...current, value: event.target.value }))
-        }
-      />
+          <select
+            value={report.unit}
+            onChange={(event) =>
+              setReport((current) => ({ ...current, unit: event.target.value }))
+            }
+            className="w-full rounded-xl border p-3"
+            disabled={!report.testType}
+          >
+            <option value="">Select Unit</option>
+            {availableUnits.map((unit) => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
 
-      <input
-        placeholder="Medicines (comma separated)"
-        className="mb-3 w-full border p-2"
-        value={report.prescribedMedicines}
-        onChange={(event) =>
-          setReport((current) => ({
-            ...current,
-            prescribedMedicines: event.target.value,
-          }))
-        }
-      />
+          <input
+            placeholder="Value"
+            type="number"
+            className="w-full rounded-xl border p-3"
+            value={report.value}
+            onChange={(event) =>
+              setReport((current) => ({ ...current, value: event.target.value }))
+            }
+          />
 
-      <textarea
-        placeholder="Notes"
-        className="mb-3 w-full border p-2"
-        value={report.notes}
-        onChange={(event) =>
-          setReport((current) => ({ ...current, notes: event.target.value }))
-        }
-      />
+          <input
+            placeholder="Medicines (comma separated)"
+            className="w-full rounded-xl border p-3"
+            value={report.prescribedMedicines}
+            onChange={(event) =>
+              setReport((current) => ({
+                ...current,
+                prescribedMedicines: event.target.value,
+              }))
+            }
+          />
 
-      <button onClick={handleUpload} className="mr-2 rounded bg-blue-600 px-4 py-2 text-white">
-        Save Disease Report
-      </button>
+          <textarea
+            placeholder="Notes"
+            className="min-h-32 w-full rounded-xl border p-3"
+            value={report.notes}
+            onChange={(event) =>
+              setReport((current) => ({ ...current, notes: event.target.value }))
+            }
+          />
 
-      <button onClick={finishAppointment} className="rounded bg-green-600 px-4 py-2 text-white">
-        Finish Appointment
-      </button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={handleUpload}
+              className="w-full rounded-xl bg-blue-600 px-4 py-3 text-white sm:w-auto"
+            >
+              Save Disease Report
+            </button>
+
+            <button
+              onClick={finishAppointment}
+              className="w-full rounded-xl bg-green-600 px-4 py-3 text-white sm:w-auto"
+            >
+              Finish Appointment
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

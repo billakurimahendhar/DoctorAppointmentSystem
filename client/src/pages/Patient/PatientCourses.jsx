@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
-import { PlayCircle, GraduationCap, X } from "lucide-react";
+import { PlayCircle, X } from "lucide-react";
 
 export default function PatientCourses() {
   const [courses, setCourses] = useState([]);
@@ -17,43 +16,39 @@ export default function PatientCourses() {
   }, []);
 
   return (
-    <div className="min-h-screen  from-blue-50 via-white to-indigo-50 py-10 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-4xl font-extrabold text-blue-700 mb-3">
+    <div className="page-shell">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-10 text-center">
+          <h2 className="mb-3 text-3xl font-extrabold text-blue-700 sm:text-4xl">
             Learn From Our Expert Doctors
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Watch informative videos uploaded by certified doctors to help you
-            understand your health better.
+          <p className="mx-auto max-w-2xl text-gray-600">
+            Watch informative videos uploaded by certified doctors to help you understand your health better.
           </p>
         </div>
 
-        {/* Courses Grid */}
         {loading ? (
-          <div className="text-center text-blue-700 text-lg mt-20">
+          <div className="mt-20 text-center text-lg text-blue-700">
             Loading courses...
           </div>
         ) : courses.length === 0 ? (
-          <p className="text-center text-gray-500 mt-20">
+          <p className="mt-20 text-center text-gray-500">
             No courses available yet.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {courses.map((course) => (
-              <motion.div
+              <div
                 key={course._id}
-                whileHover={{ scale: 1.03 }}
                 onClick={() => setSelectedCourse(course)}
-                className="bg-white rounded-2xl shadow-lg cursor-pointer border border-gray-100 overflow-hidden group"
+                className="group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-transform duration-200 hover:-translate-y-1"
               >
-                <div className="relative w-full aspect-video">
+                <div className="relative aspect-video w-full">
                   <video
                     muted
                     playsInline
                     preload="metadata"
-                    className="object-cover w-full h-full rounded-t-2xl"
+                    className="h-full w-full rounded-t-2xl object-cover"
                     onMouseEnter={(e) => {
                       e.target.muted = true;
                       const playPromise = e.target.play();
@@ -66,78 +61,64 @@ export default function PatientCourses() {
                       type="video/mp4"
                     />
                   </video>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity duration-300">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                     <PlayCircle size={60} className="text-white drop-shadow-lg" />
                   </div>
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-xl font-semibold text-blue-700 mb-2">
+                  <h3 className="mb-2 text-xl font-semibold text-blue-700">
                     {course.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                  <p className="mb-2 line-clamp-2 text-sm text-gray-600">
                     {course.description || "No description provided."}
                   </p>
                   <p className="text-xs text-gray-500">
                     Dr. {course.doctorId?.name} ({course.doctorId?.specialization})
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Fullscreen Player */}
-      <AnimatePresence>
-        {selectedCourse && (
-          <motion.div
-            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="relative w-full max-w-5xl bg-white rounded-2xl overflow-hidden shadow-xl"
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
+      {selectedCourse && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
+          <div className="relative w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-xl">
+            <button
+              onClick={() => setSelectedCourse(null)}
+              className="absolute right-3 top-3 z-10 rounded-full bg-gray-100 p-2 hover:bg-red-100"
             >
-              <button
-                onClick={() => setSelectedCourse(null)}
-                className="absolute top-3 right-3 bg-gray-100 hover:bg-red-100 p-2 rounded-full z-10"
-              >
-                <X size={22} />
-              </button>
+              <X size={22} />
+            </button>
 
-              <video
-                controls
-                autoPlay
-                className="w-full aspect-video bg-black"
-              >
-                <source
-                  src={`${selectedCourse.videoUrl.replace("/upload/", "/upload/f_mp4/")}`}
-                  type="video/mp4"
-                />
-              </video>
+            <video
+              controls
+              autoPlay
+              className="aspect-video w-full bg-black"
+            >
+              <source
+                src={`${selectedCourse.videoUrl.replace("/upload/", "/upload/f_mp4/")}`}
+                type="video/mp4"
+              />
+            </video>
 
-              <div className="p-6">
-                <h2 className="text-2xl font-semibold text-blue-700 mb-2">
-                  {selectedCourse.title}
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  {selectedCourse.description || "No description available."}
-                </p>
-                <p className="text-sm text-gray-500">
-                  By Dr. {selectedCourse.doctorId?.name} (
-                  {selectedCourse.doctorId?.specialization}) on{" "}
-                  {new Date(selectedCourse.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="p-4 sm:p-6">
+              <h2 className="mb-2 text-xl font-semibold text-blue-700 sm:text-2xl">
+                {selectedCourse.title}
+              </h2>
+              <p className="mb-4 text-gray-600">
+                {selectedCourse.description || "No description available."}
+              </p>
+              <p className="text-sm text-gray-500">
+                By Dr. {selectedCourse.doctorId?.name} ({selectedCourse.doctorId?.specialization}) on{" "}
+                {new Date(selectedCourse.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

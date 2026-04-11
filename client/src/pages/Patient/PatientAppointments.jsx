@@ -72,7 +72,7 @@ export default function PatientAppointments() {
       );
       setSelectedSlotId("");
       setActiveRescheduleId(appointment._id);
-    } catch (error) {
+    } catch {
       alert("Unable to load available slots");
     }
   };
@@ -122,7 +122,7 @@ export default function PatientAppointments() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-10">
+    <div className="page-shell">
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="rounded-3xl bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold text-slate-900">
@@ -237,7 +237,7 @@ export default function PatientAppointments() {
                         ))}
                       </div>
 
-                      <div className="mt-4 flex gap-3">
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                         <button
                           onClick={() => submitReschedule(appointment._id)}
                           className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
@@ -329,3 +329,8 @@ export default function PatientAppointments() {
     </div>
   );
 }
+
+
+
+
+

@@ -34,14 +34,14 @@ export default function Login() {
   }`;
 
   return (
-    <div className="flex justify-center items-center min-h-screen  from-indigo-100 to-blue-50">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded-2xl shadow-lg w-96">
-        <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">Login</h1>
+    <div className="form-shell">
+      <form onSubmit={handleLogin} className="form-card">
+        <h1 className="mb-6 text-center text-3xl font-bold text-blue-700">Login</h1>
 
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="border p-3 rounded w-full mb-4"
+          className="mb-4 w-full rounded border p-3"
         >
           <option value="patient">Patient</option>
           <option value="doctor">Doctor</option>
@@ -51,7 +51,7 @@ export default function Login() {
         <input
           type="email"
           placeholder="Email"
-          className="border p-3 rounded w-full mb-4"
+          className="mb-4 w-full rounded border p-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -60,14 +60,14 @@ export default function Login() {
         <input
           type="password"
           placeholder="Password"
-          className="border p-3 rounded w-full mb-4"
+          className="mb-4 w-full rounded border p-3"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
 
         {role !== "admin" && (
-          <div className="flex items-center justify-between text-sm mb-6">
+          <div className="mb-6 flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
             <Link to={forgotPasswordLink} className="text-blue-600 hover:underline">
               Forgot password?
             </Link>
@@ -77,17 +77,17 @@ export default function Login() {
           </div>
         )}
 
-        <button type="submit" className="bg-blue-600 text-white w-full py-2 rounded-lg hover:bg-blue-700">
+        <button type="submit" className="w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700">
           Login
         </button>
 
         {role !== "admin" && (
-        <p className="text-center mt-4 text-gray-500">
-          Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Register
-          </Link>
-        </p>
+          <p className="mt-4 text-center text-gray-500">
+            Do not have an account?{" "}
+            <Link to="/register" className="text-blue-600 hover:underline">
+              Register
+            </Link>
+          </p>
         )}
       </form>
     </div>

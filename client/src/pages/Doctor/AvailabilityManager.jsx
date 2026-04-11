@@ -83,7 +83,7 @@ export default function AvailabilityManager() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-10">
+    <div className="page-shell">
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="rounded-[2rem] bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold text-slate-900">
@@ -161,18 +161,18 @@ export default function AvailabilityManager() {
                 </span>
               </div>
 
-              <div className="mt-5 flex gap-3">
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 {slot.status !== "booked" && (
                   <>
                     <button
                       onClick={() => updateSlotStatus(slot._id, "available")}
-                      className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                      className="w-full rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 sm:w-auto"
                     >
                       Set available
                     </button>
                     <button
                       onClick={() => updateSlotStatus(slot._id, "blocked")}
-                      className="rounded-xl bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600"
+                      className="w-full rounded-xl bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 sm:w-auto"
                     >
                       Block slot
                     </button>
@@ -186,3 +186,4 @@ export default function AvailabilityManager() {
     </div>
   );
 }
+

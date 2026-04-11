@@ -18,39 +18,38 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col justify-center items-center  from-blue-50 via-white to-indigo-50 px-4">
-      <h2 className="text-4xl font-extrabold text-blue-700 text-center mb-4">
+    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-4 py-12 sm:px-6">
+      <h2 className="mb-4 max-w-4xl text-center text-3xl font-extrabold text-blue-700 sm:text-4xl lg:text-5xl">
         Book Your Doctor Appointments Effortlessly
       </h2>
 
-      <p className="text-gray-600 text-center max-w-2xl mb-8">
+      <p className="mb-8 max-w-2xl text-center text-base text-gray-600 sm:text-lg">
         Connect with qualified doctors, schedule visits online, and track your health reports in one place.
       </p>
 
-      {/* Conditional Rendering */}
       {user ? (
         <div className="flex flex-col items-center gap-4">
-          <h3 className="text-lg text-gray-700">
-            Welcome back, <span className="font-semibold text-blue-700">{user.name}</span> 👋
+          <h3 className="text-center text-base text-gray-700 sm:text-lg">
+            Welcome back, <span className="font-semibold text-blue-700">{user.name}</span>
           </h3>
           <button
             onClick={handleGoToDashboard}
-            className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800"
+            className="w-full rounded-lg bg-blue-700 px-6 py-3 text-white hover:bg-blue-800 sm:w-auto"
           >
             Go to Dashboard
           </button>
         </div>
       ) : (
-        <div className="flex gap-4">
+        <div className="flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
           <Link
             to="/login"
-            className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800"
+            className="rounded-lg bg-blue-700 px-6 py-3 text-center text-white hover:bg-blue-800"
           >
             Login
           </Link>
           <Link
             to="/register"
-            className="bg-white text-blue-700 px-6 py-3 rounded-lg border border-blue-700 hover:bg-blue-50"
+            className="rounded-lg border border-blue-700 bg-white px-6 py-3 text-center text-blue-700 hover:bg-blue-50"
           >
             Register
           </Link>

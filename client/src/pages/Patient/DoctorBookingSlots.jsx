@@ -145,7 +145,7 @@ export default function DoctorBookingSlots() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-10">
+    <div className="page-shell">
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="rounded-[2rem] bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -209,7 +209,7 @@ export default function DoctorBookingSlots() {
                   {slot.time}
                 </h2>
 
-                <div className="mt-5 flex gap-3">
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                   <button
                     onClick={() => bookAppointment(slot, "online")}
                     className="flex-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
@@ -253,3 +253,4 @@ export default function DoctorBookingSlots() {
     </div>
   );
 }
+
