@@ -2,6 +2,26 @@ import Slot from "../models/slot.model.js";
 
 const SLOT_START_HOUR = 10;
 const SLOT_END_HOUR = 22;
+export const APP_TIME_ZONE = process.env.APP_TIME_ZONE || "Asia/Kolkata";
+
+const slotDateTimeFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: APP_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  hourCycle: "h23",
+});
+
+const getSlotDateTimeParts = (value = new Date()) =>
+  Object.fromEntries(
+    slotDateTimeFormatter
+      .formatToParts(new Date(value))
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value])
+  );
 
 export const formatTime = (hour, minute) =>
   `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
@@ -17,12 +37,39 @@ export const generateSlotTimes = () => {
   return times;
 };
 
+export const getCurrentSlotContext = (value = new Date()) => {
+  const parts = getSlotDateTimeParts(value);
+  const hour = Number(parts.hour);
+  const minute = Number(parts.minute);
+
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    hour,
+    minute,
+    minutes: hour * 60 + minute,
+  };
+};
+
 export const toDateString = (value = new Date()) =>
-  new Date(value).toISOString().split("T")[0];
+  getCurrentSlotContext(value).date;
 
 export const parseTimeToMinutes = (time = "00:00") => {
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
+};
+
+export const isPastSlot = (date, time, now = new Date()) => {
+  const currentSlotContext = getCurrentSlotContext(now);
+
+  if (date < currentSlotContext.date) {
+    return true;
+  }
+
+  if (date > currentSlotContext.date) {
+    return false;
+  }
+
+  return parseTimeToMinutes(time) <= currentSlotContext.minutes;
 };
 
 export const sortSlotsByDateTime = (slots = []) =>
@@ -91,9 +138,6 @@ export const ensureDoctorAvailabilityWindow = async (doctorId, days = 7) => {
 };
 
 export const filterVisiblePatientSlots = (slots = [], now = new Date()) => {
-  const todayStr = toDateString(now);
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
   return sortSlotsByDateTime(
     slots.filter((slot) => {
       const isAvailable = slot.status === "available" && !slot.isBooked;
@@ -102,15 +146,7 @@ export const filterVisiblePatientSlots = (slots = [], now = new Date()) => {
         return false;
       }
 
-      if (slot.date > todayStr) {
-        return true;
-      }
-
-      if (slot.date < todayStr) {
-        return false;
-      }
-
-      return parseTimeToMinutes(slot.time) > currentMinutes;
+      return !isPastSlot(slot.date, slot.time, now);
     })
   );
 };

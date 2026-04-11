@@ -2,25 +2,9 @@ import Slot from "../models/slot.model.js";
 import {
   ensureDoctorAvailabilityWindow,
   filterVisiblePatientSlots,
-  parseTimeToMinutes,
+  isPastSlot,
   sortSlotsByDateTime,
-  toDateString,
 } from "../utils/slots.js";
-
-const isPastSlot = (date, time) => {
-  const todayStr = toDateString();
-
-  if (date < todayStr) {
-    return true;
-  }
-
-  if (date > todayStr) {
-    return false;
-  }
-
-  const now = new Date();
-  return parseTimeToMinutes(time) <= now.getHours() * 60 + now.getMinutes();
-};
 
 export const getDoctorAvailability = async (req, res) => {
   try {
@@ -29,11 +13,7 @@ export const getDoctorAvailability = async (req, res) => {
     res.json({
       success: true,
       slots: sortSlotsByDateTime(
-        slots.filter(
-          (slot) =>
-            slot.date > toDateString() ||
-            !isPastSlot(slot.date, slot.time)
-        )
+        slots.filter((slot) => !isPastSlot(slot.date, slot.time))
       ),
     });
   } catch (error) {

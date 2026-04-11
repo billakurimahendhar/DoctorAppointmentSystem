@@ -6,13 +6,7 @@ import Review from "../models/review.model.js";
 import Doctor from "../models/doctor.model.js";
 import Patient from "../models/patient.model.js";
 import { createNotifications } from "../utils/notify.js";
-
-const isPast = (dateStr, timeStr) => {
-  const [year, month, day] = dateStr.split("-").map(Number);
-  const [hours, minutes] = timeStr.split(":").map(Number);
-  const appointmentDate = new Date(year, month - 1, day, hours, minutes);
-  return appointmentDate.getTime() < Date.now();
-};
+import { isPastSlot } from "../utils/slots.js";
 
 const attachReviewsToAppointments = async (appointments = []) => {
   const appointmentIds = appointments.map((item) => item._id);
@@ -62,6 +56,16 @@ export const bookAppointment = async (req, res) => {
 
     if (!claimedSlot) {
       return res.status(400).json({ message: "Slot already booked or unavailable" });
+    }
+
+    if (isPastSlot(claimedSlot.date, claimedSlot.time)) {
+      await Slot.findByIdAndUpdate(claimedSlot._id, {
+        isBooked: false,
+        status: "available",
+      });
+
+      claimedSlot = null;
+      return res.status(400).json({ message: "Selected slot has already passed" });
     }
 
     const appointment = await Appointment.create({
@@ -132,7 +136,7 @@ export const getDoctorAppointments = async (req, res) => {
       .lean();
 
     const completedIds = appointments
-      .filter((item) => item.status === "booked" && isPast(item.date, item.time))
+      .filter((item) => item.status === "booked" && isPastSlot(item.date, item.time))
       .map((item) => item._id);
 
     if (completedIds.length > 0) {
@@ -260,6 +264,16 @@ export const rescheduleAppointment = async (req, res) => {
 
     if (!newSlot) {
       return res.status(400).json({ message: "Selected slot is no longer available" });
+    }
+
+    if (isPastSlot(newSlot.date, newSlot.time)) {
+      await Slot.findByIdAndUpdate(newSlot._id, {
+        isBooked: false,
+        status: "available",
+      });
+
+      newSlot = null;
+      return res.status(400).json({ message: "Selected slot has already passed" });
     }
 
     const oldSlotId = appointment.slotId;

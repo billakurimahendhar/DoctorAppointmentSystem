@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../lib/api";
+import { filterUpcomingSlots } from "../../lib/slots";
 
 export default function DoctorBookingSlots() {
   const { id: doctorId } = useParams();
@@ -13,6 +14,7 @@ export default function DoctorBookingSlots() {
   const [reason, setReason] = useState("General Consultation");
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [now, setNow] = useState(() => new Date());
 
   const pageSize = 6;
 
@@ -40,9 +42,44 @@ export default function DoctorBookingSlots() {
     fetchData();
   }, [doctorId]);
 
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  const upcomingSlots = useMemo(
+    () => filterUpcomingSlots(slots, now),
+    [slots, now]
+  );
+
+  const availableDates = useMemo(
+    () => [...new Set(upcomingSlots.map((slot) => slot.date))],
+    [upcomingSlots]
+  );
+
+  useEffect(() => {
+    if (!availableDates.length) {
+      if (selectedDate) {
+        setSelectedDate("");
+      }
+      if (page !== 1) {
+        setPage(1);
+      }
+      return;
+    }
+
+    if (!availableDates.includes(selectedDate)) {
+      setSelectedDate(availableDates[0]);
+      setPage(1);
+    }
+  }, [availableDates, page, selectedDate]);
+
   const visibleSlots = useMemo(
-    () => slots.filter((slot) => slot.date === selectedDate),
-    [slots, selectedDate]
+    () => upcomingSlots.filter((slot) => slot.date === selectedDate),
+    [upcomingSlots, selectedDate]
   );
 
   const paginatedSlots = useMemo(() => {
@@ -141,7 +178,7 @@ export default function DoctorBookingSlots() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {[...new Set(slots.map((slot) => slot.date))].map((date) => (
+          {availableDates.map((date) => (
             <button
               key={date}
               onClick={() => {
@@ -159,31 +196,37 @@ export default function DoctorBookingSlots() {
           ))}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {paginatedSlots.map((slot) => (
-            <div key={slot._id} className="rounded-3xl bg-white p-6 shadow-sm">
-              <p className="text-sm font-medium text-slate-500">{slot.date}</p>
-              <h2 className="mt-2 text-3xl font-bold text-slate-900">
-                {slot.time}
-              </h2>
+        {paginatedSlots.length === 0 ? (
+          <div className="rounded-3xl bg-white p-10 text-center text-slate-500 shadow-sm">
+            No upcoming slots are available right now.
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {paginatedSlots.map((slot) => (
+              <div key={slot._id} className="rounded-3xl bg-white p-6 shadow-sm">
+                <p className="text-sm font-medium text-slate-500">{slot.date}</p>
+                <h2 className="mt-2 text-3xl font-bold text-slate-900">
+                  {slot.time}
+                </h2>
 
-              <div className="mt-5 flex gap-3">
-                <button
-                  onClick={() => bookAppointment(slot, "online")}
-                  className="flex-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-                >
-                  Pay online
-                </button>
-                <button
-                  onClick={() => bookAppointment(slot, "offline")}
-                  className="flex-1 rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-                >
-                  Pay offline
-                </button>
+                <div className="mt-5 flex gap-3">
+                  <button
+                    onClick={() => bookAppointment(slot, "online")}
+                    className="flex-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                  >
+                    Pay online
+                  </button>
+                  <button
+                    onClick={() => bookAppointment(slot, "offline")}
+                    className="flex-1 rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+                  >
+                    Pay offline
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-3">

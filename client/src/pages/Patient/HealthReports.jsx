@@ -21,6 +21,72 @@ const normalRanges = {
   thyroid: [0.5, 5.0],
 };
 
+const REPORT_TIME_ZONE = "Asia/Kolkata";
+
+const fullDateFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: REPORT_TIME_ZONE,
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: REPORT_TIME_ZONE,
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
+
+const parseDateValue = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  const parsedDate = new Date(value);
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+};
+
+const parseReportDate = (report) => parseDateValue(report?.date) || parseDateValue(report?.createdAt);
+const parseReportCreatedAt = (report) => parseDateValue(report?.createdAt);
+
+const getReportDisplayDate = (report) => {
+  const parsedDate = parseReportDate(report);
+  return parsedDate ? fullDateFormatter.format(parsedDate) : report?.date || "-";
+};
+
+const getReportDisplayTime = (report) => {
+  if (report?.appointmentTime) {
+    return report.appointmentTime;
+  }
+
+  const createdAt = parseReportCreatedAt(report);
+  return createdAt ? timeFormatter.format(createdAt) : "";
+};
+
+const getReportDisplayDateTime = (report) => {
+  const dateLabel = getReportDisplayDate(report);
+  const timeLabel = getReportDisplayTime(report);
+  return timeLabel ? `${dateLabel}, ${timeLabel}` : dateLabel;
+};
+
+const getReportAxisLabel = (report) => {
+  const dateLabel = getReportDisplayDate(report);
+  const timeLabel = getReportDisplayTime(report);
+
+  return timeLabel ? `${dateLabel}, ${timeLabel}` : dateLabel;
+};
+
+const getReportSortValue = (report) => {
+  const createdAt = parseReportCreatedAt(report);
+
+  if (createdAt) {
+    return createdAt.getTime();
+  }
+
+  const parsedDate = parseReportDate(report);
+  return parsedDate ? parsedDate.getTime() : 0;
+};
+
 const buildReportPdf = (patientName, report) => {
   const doc = new jsPDF();
 
@@ -29,7 +95,7 @@ const buildReportPdf = (patientName, report) => {
   doc.setFontSize(11);
   doc.text(`Patient: ${patientName}`, 14, 28);
   doc.text(`Doctor: ${report.doctorName}`, 14, 35);
-  doc.text(`Date: ${report.date}`, 14, 42);
+  doc.text(`Recorded: ${getReportDisplayDateTime(report)}`, 14, 42);
 
   autoTable(doc, {
     startY: 50,
@@ -60,7 +126,7 @@ const buildSummaryPdf = (patientName, reports) => {
     startY: 45,
     head: [["Date", "Disease", "Value", "Doctor", "Medicines"]],
     body: reports.map((report) => [
-      report.date,
+      getReportDisplayDateTime(report),
       report.diseaseName,
       `${report.value} ${report.unit || ""}`.trim(),
       report.doctorName,
@@ -90,11 +156,13 @@ export default function HealthReports() {
       }
     };
 
-    if (user?._id) fetchReports();
+    if (user?._id) {
+      fetchReports();
+    }
   }, [user?._id]);
 
   const latestReports = useMemo(
-    () => [...reports].sort((a, b) => b.date.localeCompare(a.date)),
+    () => [...reports].sort((a, b) => getReportSortValue(b) - getReportSortValue(a)),
     [reports]
   );
 
@@ -126,9 +194,7 @@ export default function HealthReports() {
             </div>
 
             <button
-              onClick={() =>
-                buildSummaryPdf(user?.name || "Patient", latestReports)
-              }
+              onClick={() => buildSummaryPdf(user?.name || "Patient", latestReports)}
               className="rounded-xl bg-blue-600 px-4 py-2 text-sm text-white"
             >
               Download full summary
@@ -139,17 +205,20 @@ export default function HealthReports() {
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="grid gap-6 md:grid-cols-2">
             {Object.entries(groupedReports).map(([disease, diseaseReports]) => {
-              
-              // ✅ FIX: make each point unique
-              const formattedReports = diseaseReports.map((r, i) => ({
-                ...r,
-                uniqueKey: `${r.date}-${i}`,
+              const formattedReports = diseaseReports.map((report, index) => ({
+                ...report,
+                chartKey: report._id || `${report.date}-${index}`,
+                axisLabel: getReportAxisLabel(report),
+                exactDateTime: getReportDisplayDateTime(report),
               }));
 
+              const reportLabelMap = new Map(
+                formattedReports.map((report) => [report.chartKey, report])
+              );
+
               const [min, max] = normalRanges[disease] || [0, Infinity];
-              const latest = diseaseReports[diseaseReports.length - 1];
-              const isAbnormal =
-                latest?.value < min || latest?.value > max;
+              const latest = formattedReports[formattedReports.length - 1];
+              const isAbnormal = latest?.value < min || latest?.value > max;
 
               return (
                 <div key={disease} className="rounded-3xl bg-white p-5 shadow-sm">
@@ -166,58 +235,51 @@ export default function HealthReports() {
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={formattedReports}>
                         <CartesianGrid strokeDasharray="3 3" />
-
-                        {/* ✅ uniqueKey used internally */}
                         <XAxis
-                          dataKey="uniqueKey"
-                          tickFormatter={(val) => val.split("-")[0]}
-                        />
-
-                        <YAxis />
-                        
-                        {/* ✅ Tooltip with medicines */}
-                        <Tooltip
-                          labelFormatter={(label) =>
-                            label.split("-")[0]
+                          dataKey="chartKey"
+                          tick={{ fontSize: 10 }}
+                          height={72}
+                          angle={-20}
+                          textAnchor="end"
+                          tickFormatter={(value) =>
+                            reportLabelMap.get(value)?.axisLabel || ""
                           }
-                          content={({ active, payload, label }) => {
+                        />
+                        <YAxis />
+                        <Tooltip
+                          content={({ active, payload }) => {
                             if (active && payload && payload.length) {
                               const point = payload[0].payload;
-                              const abnormal =
-                                point.value < min ||
-                                point.value > max;
+                              const abnormal = point.value < min || point.value > max;
 
                               return (
-                                <div className="bg-white border p-3 rounded shadow">
-                                  <p>{label.split("-")[0]}</p>
-                                  <p>Value: {point.value}</p>
+                                <div className="rounded border bg-white p-3 shadow">
+                                  <p>{point.exactDateTime}</p>
                                   <p>
-                                    {abnormal ? "Abnormal" : "Normal"}
+                                    Value: {point.value} {point.unit || ""}
                                   </p>
+                                  <p>{abnormal ? "Abnormal" : "Normal"}</p>
 
                                   {point.prescribedMedicines?.length > 0 && (
                                     <ul>
-                                      {point.prescribedMedicines.map(
-                                        (m, i) => (
-                                          <li key={i}>{m}</li>
-                                        )
-                                      )}
+                                      {point.prescribedMedicines.map((medicine, index) => (
+                                        <li key={index}>{medicine}</li>
+                                      ))}
                                     </ul>
                                   )}
                                 </div>
                               );
                             }
+
                             return null;
                           }}
                         />
-
                         <Line
                           dataKey="value"
                           stroke="#2563eb"
                           dot={(props) => {
                             const abnormal =
-                              props.payload.value < min ||
-                              props.payload.value > max;
+                              props.payload.value < min || props.payload.value > max;
 
                             return (
                               <Dot
@@ -233,27 +295,42 @@ export default function HealthReports() {
                     </ResponsiveContainer>
                   </div>
 
-                  <p className="mt-3 text-sm">
-                    Latest: {latest?.value}
-                  </p>
+                  <div className="mt-3 space-y-1 text-sm">
+                    <p>
+                      Latest: {latest?.value} {latest?.unit || ""}
+                    </p>
+                    <p className="text-slate-500">
+                      Recorded: {latest ? latest.exactDateTime : "-"}
+                    </p>
+                  </div>
                 </div>
               );
             })}
           </div>
 
-          {/* RIGHT SIDE SAME */}
-          <div className="bg-white p-6 rounded-3xl">
+          <div className="rounded-3xl bg-white p-6">
             <h2 className="text-xl font-semibold">
               Prescription history
             </h2>
 
             {latestReports.map((report) => (
-              <div key={report._id} className="mt-4 border p-3 rounded">
-                <p>{report.diseaseName}</p>
-                <p>{report.date}</p>
-                <p>
-                  Medicines:{" "}
-                  {report.prescribedMedicines.join(", ")}
+              <div key={report._id} className="mt-4 rounded border p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p>{report.diseaseName}</p>
+                    <p className="text-sm text-slate-500">
+                      {getReportDisplayDateTime(report)}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => buildReportPdf(user?.name || "Patient", report)}
+                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  >
+                    PDF
+                  </button>
+                </div>
+                <p className="mt-2 text-sm">
+                  Medicines: {report.prescribedMedicines.join(", ") || "-"}
                 </p>
               </div>
             ))}

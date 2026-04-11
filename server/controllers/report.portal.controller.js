@@ -85,6 +85,7 @@ export const getPatientReports = async (req, res) => {
 
     const reports = await Report.find({ patientId })
       .populate("doctorId", "name specialization qualification")
+      .populate("appointmentId", "date time")
       .sort({ date: 1, createdAt: 1 })
       .lean();
 
@@ -100,6 +101,8 @@ export const getPatientReports = async (req, res) => {
       grouped[key].push({
         _id: report._id,
         date: report.date,
+        createdAt: report.createdAt,
+        appointmentTime: report.appointmentId?.time || "",
         diseaseName: report.diseaseName,
         testType: report.testType,
         value: Number(report.value),
@@ -116,8 +119,10 @@ export const getPatientReports = async (req, res) => {
       groupedByDisease: grouped,
       reports: reports.map((report) => ({
         _id: report._id,
-        appointmentId: report.appointmentId,
+        appointmentId: report.appointmentId?._id || report.appointmentId,
         date: report.date,
+        createdAt: report.createdAt,
+        appointmentTime: report.appointmentId?.time || "",
         diseaseName: report.diseaseName,
         testType: report.testType,
         value: Number(report.value),

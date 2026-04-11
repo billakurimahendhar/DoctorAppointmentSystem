@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import api from "../../lib/api";
+import { filterUpcomingSlots } from "../../lib/slots";
 
 const statusClasses = {
   booked: "bg-blue-100 text-blue-700",
@@ -65,7 +66,7 @@ export default function PatientAppointments() {
     try {
       const { data } = await api.get(`/doctor/${appointment.doctorId._id}/slots`);
       setAvailableSlots(
-        (data.slots || []).filter(
+        filterUpcomingSlots(data.slots || []).filter(
           (slot) => String(slot._id) !== String(appointment.slotId)
         )
       );
