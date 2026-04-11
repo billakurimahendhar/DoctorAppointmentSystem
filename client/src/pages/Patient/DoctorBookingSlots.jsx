@@ -151,7 +151,7 @@ export default function DoctorBookingSlots() {
   return (
     <div className="page-shell">
       <div className="mx-auto max-w-6xl space-y-6">
-        <div className="rounded-[2rem] bg-white p-6 shadow-sm">
+        <div className=" bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <img
               src={

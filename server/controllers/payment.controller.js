@@ -29,7 +29,7 @@ export const createOrder = async (req, res) => {
         message: `Missing Razorpay configuration: ${missingEnv.join(", ")}`,
       });
     }
-
+   console.log("Creating Razorpay order with data:", req.body); // Debug log
     const { amount, appointmentId } = req.body;
     const normalizedAmount = Number(amount);
 
@@ -144,3 +144,12 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+app.get("/test-razorpay", async (req, res) => {
+  try {
+    const response = await axios.get("https://api.razorpay.com");
+    res.send("Razorpay reachable");
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Cannot reach Razorpay");
+  }
+});
