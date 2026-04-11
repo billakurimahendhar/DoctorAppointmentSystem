@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 
 export default function BookAppointment({ doctorId }) {
   const [slots, setSlots] = useState([]);
@@ -14,7 +14,7 @@ export default function BookAppointment({ doctorId }) {
   }, [doctorId]);
 
   const fetchSlots = async () => {
-    const res = await axios.get(`https://doctorappointmentsystem-0818.onrender.com/api/doctor/${doctorId}/slots`);
+    const res = await api.get(`/doctor/${doctorId}/slots`);
     setSlots(res.data.slots.filter((s) => !s.isBooked));
   };
 
@@ -32,10 +32,7 @@ export default function BookAppointment({ doctorId }) {
         paymentMode,
       };
 
-      const res = await axios.post(
-        "https://doctorappointmentsystem-0818.onrender.com/api/appointments/book",
-        appointment
-      );
+      const res = await api.post("/appointments/book", appointment);
 
       if (paymentMode === "online") {
         await startRazorpayPayment(res.data.appointment);
@@ -45,7 +42,7 @@ export default function BookAppointment({ doctorId }) {
       fetchSlots();
     } catch (err) {
       console.error(err);
-      alert("Booking failed");
+      alert(err.response?.data?.message || err.message || "Booking failed");
     } finally {
       setLoading(false);
     }
@@ -53,20 +50,24 @@ export default function BookAppointment({ doctorId }) {
 
   const startRazorpayPayment = async (appointment) => {
     const amount = 500; // fixed fee or doctor-specific
-    const { data } = await axios.post("https://doctorappointmentsystem-0818.onrender.com/api/payment/create-order", {
+    const { data } = await api.post("/payment/create-order", {
       amount,
       appointmentId: appointment._id,
     });
 
+    if (!window.Razorpay) {
+      throw new Error("Razorpay checkout failed to load");
+    }
+
     const options = {
-      key: "YOUR_RAZORPAY_KEY_ID",
+      key: data.keyId,
       amount: data.order.amount,
       currency: "INR",
       name: "MediConnect",
       description: "Doctor Appointment Payment",
       order_id: data.order.id,
       handler: async function (response) {
-        await axios.post("https://doctorappointmentsystem-0818.onrender.com/api/payment/verify", {
+        await api.post("/payment/verify", {
           ...response,
           appointmentId: appointment._id,
         });

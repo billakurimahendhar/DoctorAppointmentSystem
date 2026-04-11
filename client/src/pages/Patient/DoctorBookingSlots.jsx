@@ -112,8 +112,12 @@ export default function DoctorBookingSlots() {
         appointmentId: booking.appointment._id,
       });
 
+      if (!window.Razorpay) {
+        throw new Error("Razorpay checkout failed to load");
+      }
+
       const options = {
-        key: "rzp_test_RRLXC3x2PPYQOB",
+        key: data.keyId,
         amount: data.order.amount,
         currency: "INR",
         name: "MediConnect",
@@ -132,7 +136,7 @@ export default function DoctorBookingSlots() {
 
       new window.Razorpay(options).open();
     } catch (error) {
-      alert(error.response?.data?.message || "Booking failed");
+      alert(error.response?.data?.message || error.message || "Booking failed");
     }
   };
 

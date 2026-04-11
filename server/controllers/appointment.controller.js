@@ -18,7 +18,7 @@ export const bookAppointment = async (req, res) => {
       date,
       time,
       paymentMode: paymentMode || "offline",  // ✅ NEW
-      paymentStatus: paymentMode === "online" ? "paid" : "pending",
+      paymentStatus: paymentMode === "online" ? "pending" : "unpaid",
       isCompleted: false,
     });
 

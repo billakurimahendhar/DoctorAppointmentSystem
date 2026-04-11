@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../../lib/api";
 
 export default function DoctorSlots() {
   const { id: doctorId } = useParams();
@@ -17,15 +17,14 @@ export default function DoctorSlots() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const slotRes = await axios.get(`https://doctorappointmentsystem-0818.onrender.com/api/doctor/${doctorId}/slots`);
+        const slotRes = await api.get(`/doctor/${doctorId}/slots`);
         setSlots(slotRes.data.slots || []);
 
-        const docRes = await axios.get(`https://doctorappointmentsystem-0818.onrender.com/api/doctor`);
-        const found = docRes.data.doctors.find(d => d._id === doctorId);
-        setDoctor(found);
+        const docRes = await api.get(`/doctor/profile/${doctorId}`);
+        setDoctor(docRes.data.doctor || null);
 
         const dates = [...new Set(slotRes.data.slots.map(s => s.date))].sort();
-        setSelectedDate(dates[0]);
+        setSelectedDate(dates[0] || "");
       } catch (e) {
         console.error(e);
       } finally {
@@ -48,37 +47,41 @@ export default function DoctorSlots() {
 
   const bookAppointment = async (slot, paymentMode) => {
     try {
-      const { data: booking } = await axios.post(
-        "https://doctorappointmentsystem-0818.onrender.com/api/appointments/book",
-        {
-          doctorId,
-          patientId: patient._id,
-          slotId: slot._id,
-          date: slot.date,
-          time: slot.time,
-          paymentMode,
-        }
-      );
+      const { data: booking } = await api.post("/appointments/book", {
+        doctorId,
+        patientId: patient._id,
+        slotId: slot._id,
+        date: slot.date,
+        time: slot.time,
+        paymentMode,
+      });
 
       if (paymentMode === "offline") {
         alert("✅ Appointment booked (Pay at clinic)");
         return;
       }
 
-      const { data } = await axios.post(
-        "https://doctorappointmentsystem-0818.onrender.com/api/payment/create-order",
-        { amount: 500, appointmentId: booking.appointment._id }
+      const { data } = await api.post(
+        "/payment/create-order",
+        {
+          amount: doctor?.feesPerConsultation || 500,
+          appointmentId: booking.appointment._id,
+        }
       );
 
+      if (!window.Razorpay) {
+        throw new Error("Razorpay checkout failed to load");
+      }
+
       const options = {
-        key: "rzp_test_RRLXC3x2PPYQOB",
+        key: data.keyId,
         amount: data.order.amount,
         currency: "INR",
         name: "MediConnect",
         description: "Doctor Appointment",
         order_id: data.order.id,
         handler: async (response) => {
-          await axios.post("https://doctorappointmentsystem-0818.onrender.com/api/payment/verify", {
+          await api.post("/payment/verify", {
             ...response,
             appointmentId: booking.appointment._id,
           });
@@ -89,7 +92,7 @@ export default function DoctorSlots() {
 
       new window.Razorpay(options).open();
     } catch (err) {
-      alert(err.response?.data?.message || "Booking failed");
+      alert(err.response?.data?.message || err.message || "Booking failed");
     }
   };
 

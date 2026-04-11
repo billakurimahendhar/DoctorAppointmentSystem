@@ -5,20 +5,59 @@ import Doctor from "../models/doctor.model.js";
 import Patient from "../models/patient.model.js";
 import { createNotifications } from "../utils/notify.js";
 
+const getMissingRazorpayEnv = () => {
+  const missing = [];
+
+  if (!process.env.RAZORPAY_KEY_ID) {
+    missing.push("RAZORPAY_KEY_ID");
+  }
+
+  if (!process.env.RAZORPAY_KEY_SECRET) {
+    missing.push("RAZORPAY_KEY_SECRET");
+  }
+
+  return missing;
+};
+
 // 🧾 1️⃣ Create Razorpay Order
 export const createOrder = async (req, res) => {
   try {
+    const missingEnv = getMissingRazorpayEnv();
+    if (missingEnv.length) {
+      return res.status(500).json({
+        success: false,
+        message: `Missing Razorpay configuration: ${missingEnv.join(", ")}`,
+      });
+    }
+
     const { amount, appointmentId } = req.body;
+    const normalizedAmount = Number(amount);
+
+    if (!appointmentId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "appointmentId is required" });
+    }
+
+    if (!Number.isFinite(normalizedAmount) || normalizedAmount <= 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "A valid amount is required" });
+    }
 
     const options = {
-      amount: amount * 100, // amount in paise
+      amount: Math.round(normalizedAmount * 100),
       currency: "INR",
       receipt: `receipt_${appointmentId}`,
     };
 
     const order = await razorpayInstance.orders.create(options);
 
-    res.status(200).json({ success: true, order });
+    res.status(200).json({
+      success: true,
+      order,
+      keyId: process.env.RAZORPAY_KEY_ID,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -27,24 +66,50 @@ export const createOrder = async (req, res) => {
 // 💳 2️⃣ Verify Payment
 export const verifyPayment = async (req, res) => {
   try {
+    const missingEnv = getMissingRazorpayEnv();
+    if (missingEnv.length) {
+      return res.status(500).json({
+        success: false,
+        message: `Missing Razorpay configuration: ${missingEnv.join(", ")}`,
+      });
+    }
+
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, appointmentId } = req.body;
 
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    if (!appointmentId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "appointmentId is required" });
+    }
+
+    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(body.toString())
+      .update(body)
       .digest("hex");
 
     if (expectedSignature !== razorpay_signature)
       return res.status(400).json({ success: false, message: "Invalid signature" });
 
     // Update appointment payment
-    const appointment = await Appointment.findByIdAndUpdate(appointmentId, {
-      paymentMode: "online",
-      paymentStatus: "paid",
-      paymentId: razorpay_payment_id,
-    });
+    const appointment = await Appointment.findByIdAndUpdate(
+      appointmentId,
+      {
+        paymentMode: "online",
+        paymentStatus: "paid",
+        paymentId: razorpay_payment_id,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!appointment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Appointment not found" });
+    }
 
     if (appointment) {
       const [doctor, patient] = await Promise.all([
