@@ -6,7 +6,6 @@ import { AppProvider } from "./context/AppContext"; // ✅ Import your provider
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* ✅ Wrap the whole app inside AppProvider */}
     <AppProvider>
       <App />
     </AppProvider>

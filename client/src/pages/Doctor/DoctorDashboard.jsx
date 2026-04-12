@@ -14,7 +14,7 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-import api, { getAuthHeaders } from "../lib/api";
+import api, { getAuthHeaders } from "../../lib/api";
 
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);

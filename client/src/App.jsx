@@ -3,7 +3,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext";
-import Layout from "./components/Layout";
 // Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -19,26 +18,19 @@ import Home from "./pages/Home";
 // Doctor Pages
 import DoctorHome from "./pages/Doctor/DoctorHome";
 import AvailabilityManager from "./pages/Doctor/AvailabilityManager";
-import DoctorSlots from "./pages/Doctor/DoctorSlots"; // 🔁 renamed
 import DoctorReports from "./pages/Doctor/DoctorReports";
 import DoctorCourses from "./pages/Doctor/DoctorCourses";
 import UploadReportPage from "./pages/Doctor/UploadReportPage";
 
-import DoctorList from "./pages/Patient/DoctorList";
 import DoctorDirectory from "./pages/Patient/DoctorDirectory";
 
 // Patient Pages
-import PatientHome from "./pages/Patient/PatientHome";
-import PatientReports from "./pages/Patient/PatientReports";
 import HealthReports from "./pages/Patient/HealthReports";
 import PatientCourses from "./pages/Patient/PatientCourses";
 import DoctorBookingSlots from "./pages/Patient/DoctorBookingSlots";
-import DoctorSlotsPatient from "./pages/Patient/DoctorSlots"; // 🔁 renamed
 import DocAppointments from "./pages/Doctor/DocAppointments";
 import PHome from "./pages/Patient/PHome";
 import DoctorProfileDetails from "./pages/Patient/DoctorProfileDetails";
-import DoctorProfile from "./pages/Doctor/DoctorProfile";
-import PatientTimeline from "./pages/Patient/PatientTimeline";
 import MedicalTimeline from "./pages/Patient/MedicalTimeline";
 import PatientAppointments from "./pages/Patient/PatientAppointments";
 import Notifications from "./pages/Notifications";
@@ -46,7 +38,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 
 
-import DoctorDashboard from "./pages/DoctorDashboard";
+import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
 
 
 export default function App() {
